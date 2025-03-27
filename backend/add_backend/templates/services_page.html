@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список услуг</title>
+    <style>
+        .container {
+            display: flex;         
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            margin-top: -5%;
+        }
+        
+        .title {
+            font-family: 'Kyiv Type Titling', sans-serif;
+            font-size: 60px;
+            color: #ffc073;
+            -webkit-text-stroke: 0.5px black;
+        }
+        
+        .search_field {
+            position: relative;
+            margin-top: -2%;
+        }
+        
+        .search_field input {
+            border-radius: 15px;
+            width: 600px;
+            height: 40px;
+            padding-right: 70px;
+            font-size: 35px;
+            background-color: #D9D9D9;
+        }
+        
+        .search_field button {
+            position: absolute;
+            right: calc(50% - 337px); /* Центрируем кнопку относительно input */
+            background-color: #ebd8c2;
+            border-radius: 15px;
+            height: 46px;
+            width: 70px;
+            cursor: pointer;
+            padding: 5px 10px;
+        }
+        
+        .card {
+            width: 700px;
+            min-height: 145px;
+            background: #D9D9D9;
+            display: flex;
+            border-radius: 15px;
+            position: relative;
+            font-family: 'Handjet', sans-serif;
+            line-height: 0.9;
+            flex-direction: column;
+        }
+    </style>
+</head>
+<body>
+    <p>IS-COM</p>
+    <p>ваш надежный <br />провайдер!</p>
+
+    <div>
+        <button onclick="console.log('Услуги clicked')">Услуги</button>
+        <button onclick="console.log('Заявки clicked')">Заявки</button>
+    </div>
+
+    <h2 class="title">Услуги</h2>
+    <form class="search_field" method="get">
+        <input type="text" name="q" value="{{ query }}" placeholder="Поиск по имени или цене">
+        <button type="submit">Найти</button>
+    </form>
+    <div class="container">
+        {% for service in services %}
+            <div class="card">
+                <img src="/static/{{ service.image }}" alt="{{ service.name }}">
+                <h2><a href="{{ service.id }}/">{{ service.name }}</a></h2>
+                <p>Цена: {{ service.price }} руб.</p>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
