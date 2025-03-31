@@ -1,0 +1,36 @@
+{% load static %}
+
+<div class="container">
+    <link rel="stylesheet" href="{% static 'css/requests_page.css' %}">
+
+    <h1>Заявки</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Статус</th>
+                <th>Дата начала</th>
+                <th>Дата окончания</th>
+            </tr>
+        </thead>
+        <tbody id="requests-body">
+            <!-- Данные будут загружены сюда -->
+        </tbody>
+    </table>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const requests = [
+                { status: "Ожидание", startDate: "2025-03-28", endDate: "2025-04-05" },
+                { status: "В процессе", startDate: "2025-03-25", endDate: "2025-04-01" },
+                { status: "Завершено", startDate: "2025-03-20", endDate: "2025-03-27" }
+            ];
+
+            const tbody = document.getElementById("requests-body");
+            requests.forEach(req => {
+                const row = document.createElement("tr");
+                row.innerHTML = `<td>${req.status}</td><td>${req.startDate}</td><td>${req.endDate}</td>`;
+                tbody.appendChild(row);
+            });
+        });
+    </script>
+</div>
