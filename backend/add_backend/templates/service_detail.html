@@ -1,0 +1,13 @@
+{% load static %}
+
+<div class="card">
+    <link rel="stylesheet" href="{% static 'css/service_detail.css' %}">
+    <h2 class="title">{{ service.name }}</h2>
+    <img class="image" src="{% static 'img/' %}{{ service.image }}" alt="{{ service.name }}">
+    <p class="description">
+        {{ service.description }}
+    </p>
+    <p>Цена: {{ service.price }} руб.</p>
+    <p>Даты: {{ service.dates }}</p>
+</div>
+
