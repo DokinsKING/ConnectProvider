@@ -1,0 +1,35 @@
+{% load static %}
+
+<div class="container">
+    <link rel="stylesheet" href="{% static 'css/requests_page.css' %}">
+
+    <h1>Заявки</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Статус</th>
+                <th>Дата начала</th>
+                <th>Дата окончания</th>
+            </tr>
+        </thead>
+        <tbody id="requests-body">
+            <tr>
+                <td>Ожидание</td>
+                <td>2025-03-28</td>
+                <td>2025-04-05</td>
+            </tr>
+            <tr>
+                <td>В процессе</td>
+                <td>2025-03-25</td>
+                <td>2025-04-01</td>
+            </tr>
+            <tr>
+                <td>Завершено</td>
+                <td>2025-03-20</td>
+                <td>2025-03-27</td>
+            </tr>
+        </tbody>
+    </table>
+    
+
+</div>

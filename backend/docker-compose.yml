@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  db:
+    container_name: ConnectProvider-POSTGREcontainer
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: conprov
+      POSTGRES_DB: ConnectProvider-db
+    ports:
+      - "5432:5432"
+
+  minio:
+    container_name: ConnectProvider-MINIOcontainer
+    image: minio/minio
+    restart: always
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: conprova
+    ports:
+      - "9000:9000" # Для API
+      - "9001:9001"  
+    volumes:
+      - minio_data:/data  # Данные MinIO будут храниться в volume
+    command: server /data --console-address ":9001"
+
+volumes:
+  minio_data:

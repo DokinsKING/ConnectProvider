@@ -1,0 +1,47 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IS-COM</title>
+    <link rel="stylesheet" href="{% static 'css/main_page.css'%}">
+</head>
+<body>
+    <div class="static">
+        <a href="/">
+            <p class="logo">IS-COM</p>
+            <p class="under_logo">ваш надежный <br />провайдер!</p>
+        </a>
+        
+        <div class="right_buttons_container">
+            <a href="/services">
+                <button class="right_buttons">Услуги</button>
+            </a>
+            <a href="/requests">
+                <button class="right_buttons">Заявки</button>
+            </a>
+        </div>
+    </div>
+        {% if show_services == "services" %}
+            {% include "services_page.html" %}
+        {% elif show_services == "requests" %}
+            {% include "applications.html" %}
+        {% elif show_services == "service_detail" %}
+            {% include "service_detail.html" %}
+        {% else %}
+            <div class="container">
+                <link rel="stylesheet" href="{% static 'css/main_things.css' %}">
+                <img id="main_img" src="{% static 'img/14SE.gif' %}" alt="main_gif" />
+                <h3>Ищете стабильный и быстрый интернет? IS-COM предоставляет качественные интернет-услуги для дома и бизнеса!</h1>
+                <a href="/services">
+                    <h2>Наши услуги</h2>
+                </a>
+                <a href="/requests">
+                    <h2>Заявки на подключение</h2>
+                </a>
+            </div>
+        {% endif %}
+</body>
+</html>
