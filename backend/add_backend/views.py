@@ -1,13 +1,14 @@
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import viewsets
-from .models import Service, Application, ApplicationService
-from .serializers import ServiceSerializer, ApplicationSerializer, ApplicationServiceSerializer
+from .models import Service, Application, ApplicationService, User
+from .serializers import ServiceSerializer, ApplicationSerializer, ApplicationServiceSerializer,UserSerializer
 from django_filters import rest_framework as filters
+from django_filters.rest_framework import DjangoFilterBackend
 
 # Фильтр для услуг
 class ServiceFilter(filters.FilterSet):
-    # Фильтрация по имени услуги
+    # Фильтрация по имени услуги (поиск по части имени)
     name = filters.CharFilter(field_name="name", lookup_expr='icontains')  # Поиск по части имени услуги
     # Фильтрация по цене
     price_min = filters.NumberFilter(field_name="price", lookup_expr='gte')  # Минимальная цена
@@ -21,7 +22,8 @@ class ServiceFilter(filters.FilterSet):
 class ServiceViewSet(viewsets.ModelViewSet):
     queryset = Service.objects.all()
     serializer_class = ServiceSerializer
-    filter_class = ServiceFilter  # Применяем фильтрацию для услуг
+    filter_backends = (DjangoFilterBackend,)  # Используем фильтрацию
+    filterset_class = ServiceFilter  # Подключаем наш фильтр
 
 # ViewSet для управления заявками
 class ApplicationViewSet(viewsets.ModelViewSet):
@@ -64,3 +66,8 @@ class ApplicationServiceViewSet(viewsets.ModelViewSet):
             instance.quantity = self.request.data['quantity']
             instance.save()
 
+
+# ViewSet для управления услугами
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer

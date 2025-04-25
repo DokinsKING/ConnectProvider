@@ -25,15 +25,30 @@
     padding-right: 70px;
     font-size: 35px;
     background-color: #D9D9D9;
+    padding-left: 10px;
 }
 
 .search_field button {
     position: absolute;
-    right: calc(50% - 337px); /* Центрируем кнопку относительно input */
+    right: calc(50% - 342px); /* Центрируем кнопку относительно input */
     background-color: #ebd8c2;
     border-radius: 15px;
     height: 46px;
     width: 70px;
     cursor: pointer;
     padding: 5px 10px;
+}
+
+.cart
+{
+    position: fixed;
+    width: 5%;
+    bottom: 40px;
+    left: 40px;
+    cursor: pointer;
+}
+
+.cart:hover
+{
+    filter: brightness(1.3);
 }

@@ -19,15 +19,22 @@ class User(models.Model):
     email = models.EmailField()
     role = models.CharField(max_length=50)
 
+    def __str__(self):
+        return self.name  # Теперь при отображении будет выводиться только имя услуги
+
 # Модель услуги
 class Service(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
-    image = models.ImageField(upload_to='add_backend/static/img')
+    price = models.IntegerField()
+    image = models.URLField()
     status = models.CharField(max_length=10, choices=ServiceStatus.choices, default=ServiceStatus.ACTIVE)
     def soft_delete(self):
         self.status = ServiceStatus.DELETED
         self.save()
+
+    def __str__(self):
+        return self.name  # Теперь при отображении будет выводиться только имя услуги
 
 # Модель заявки
 class Application(models.Model):
@@ -38,9 +45,18 @@ class Application(models.Model):
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='created_applications')
     moderator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='moderated_applications')
 
+    def __str__(self):
+        # Проверка, если creator существует
+        creator_name = self.creator.name if self.creator else "No creator"
+        return f"Заявка #{self.pk} от {creator_name}"
+
 # Связующая таблица для заявки и услуги
 class ApplicationService(models.Model):
-    application = models.ForeignKey(Application, on_delete=models.CASCADE)
+    application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name='application_services')
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
+    
     class Meta:
         unique_together = ('application', 'service')
+
+    def __str__(self):
+        return f"Заявка #{self.application.pk} - Услуга: {self.service.name}"

@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User as Moderator
 
 # Статусы заявки
 class ApplicationStatus(models.TextChoices):
@@ -27,7 +28,7 @@ class Service(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
     price = models.IntegerField()
-    image = models.URLField()
+    image = models.URLField(max_length=500)
     status = models.CharField(max_length=10, choices=ServiceStatus.choices, default=ServiceStatus.ACTIVE)
     def soft_delete(self):
         self.status = ServiceStatus.DELETED
@@ -43,7 +44,7 @@ class Application(models.Model):
     form_date = models.DateTimeField(null=True, blank=True)
     completion_date = models.DateTimeField(null=True, blank=True)
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='created_applications')
-    moderator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='moderated_applications')
+    moderator = models.ForeignKey(Moderator, on_delete=models.SET_NULL, null=True, related_name='moderated_applications')
 
     def __str__(self):
         # Проверка, если creator существует

@@ -37,3 +37,8 @@ class ApplicationSerializer(serializers.ModelSerializer):
         if kwargs.get('context') and kwargs['context'].get('request') and kwargs['context']['request'].method == 'POST':
             self.fields.pop('application_services', None)  # Исключаем поле для POST-запросов
         super().__init__(*args, **kwargs)
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = '__all__'

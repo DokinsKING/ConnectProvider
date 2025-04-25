@@ -18,16 +18,20 @@
 }
 
 .description {
+    font-family: 'Handjet', sans-serif;
     font-size: 24px;
     margin-left: 225px;
     max-width: 455px;
     text-align: justify;
     margin-top: -3%;
+    overflow-wrap: break-word; 
+    word-wrap: break-word;
 }
 
 .image {
     position: absolute;
     height: 100%;
+    object-fit:fill;
     width: 30%;
     border-radius: 15px;
     text-align: left;

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,9 +26,14 @@ SECRET_KEY = 'django-insecure-cjl^208oj$%fvygk6nf19(82q==oq*x2sme^4&kyd9ql(xbq)%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost',
-       '127.0.0.1',
-       'subdomain.domain.org']
+ALLOWED_HOSTS = ['*']
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # добавьте сюда адрес вашего фронтенда
+]
+
+# В settings.py
+DEFAULT_CHARSET = 'utf-8'
 
 
 # Application definition
@@ -42,6 +48,8 @@ INSTALLED_APPS = [
     'add_backend',
     'rest_framework',
     'storages',
+    'corsheaders',
+    'django_filters'
 ]
 
 MIDDLEWARE = [
@@ -52,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -116,14 +125,20 @@ REST_FRAMEWORK = {
     ]
 }
 
-AWS_ACCESS_KEY_ID = 'admin'  # Минимальное имя пользователя для MinIO
-AWS_SECRET_ACCESS_KEY = 'conprova'  # Минимальный пароль для MinIO
-AWS_STORAGE_BUCKET_NAME = 'images'  # Укажите имя бакета, который вы создали в MinIO
-AWS_S3_ENDPOINT_URL = 'http://localhost:9001'  # URL вашего MinIO сервера
-AWS_S3_CUSTOM_DOMAIN = f'{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}'  # URL для доступа к файлам
-AWS_S3_OBJECT_PARAMETERS = {
-    'CacheControl': 'max-age=86400',
-}
+DEFAULT_FILE_STORAGE = "minio.storage.storage.MinioMediaStorage"
+STATICFILES_STORAGE = "minio.storage.storage.MinioStaticStorage"
+
+MINIO_STORAGE_ENDPOINT = os.getenv('MINIO_STORAGE_ENDPOINT') or 'localhost:9000'
+MINIO_STORAGE_ACCESS_KEY = 'admin'
+MINIO_STORAGE_SECRET_KEY = 'conprova'
+MINIO_STORAGE_MEDIA_BUCKET_NAME = 'images'
+MINIO_STORAGE_AUTO_CREATE_MEDIA_BUCKET = True
+MINIO_STORAGE_STATIC_BUCKET_NAME = 'static'
+MINIO_STORAGE_AUTO_CREATE_STATIC_BUCKET = True
+MINIO_STORAGE_USE_HTTPS = False
+
+MINIO_STORAGE_MEDIA_URL = f'{os.getenv("MINIO_CONTENT_ENDPOINT") or "localhost:9000"}/images'
+MINIO_STORAGE_STATIC_URL = f'{os.getenv("MINIO_CONTENT_ENDPOINT") or "localhost:9000"}/static'
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -149,6 +164,5 @@ STATICFILES_DIRS = [BASE_DIR / "add_backend" / "static"]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 

@@ -7,6 +7,7 @@ router = DefaultRouter()
 router.register(r'services', views.ServiceViewSet)
 router.register(r'applications', views.ApplicationViewSet)
 router.register(r'application-services', views.ApplicationServiceViewSet)
+router.register(r'users', views.UserViewSet)
 
 # Здесь подключаем только API маршруты
 urlpatterns = [

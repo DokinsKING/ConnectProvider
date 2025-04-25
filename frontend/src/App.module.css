@@ -1,3 +1,9 @@
+.full_logo
+{
+    margin-top: 30px;
+}
+
+
 .logo {
     font-family: 'Inspiration', sans-serif;
     font-size: 70px; /* Установим точный размер */
@@ -9,6 +15,12 @@
         0px 0px 25px black;
     margin-top: 30px; /* Смещение от верхнего края */
     margin-left: 60px; /* Смещение от левого края */
+    cursor: pointer;
+}
+
+.logo:hover
+{
+    filter: brightness(1.3);
 }
 
 .under_logo {
@@ -22,8 +34,14 @@
     0px -1px 4px black,
     0px 0px 25px black; 
     position: absolute;
-    top: 75px;
+    top: 115px;
     left: 95px;
+    cursor: pointer;
+}
+
+.under_logo:hover
+{
+    filter: brightness(1.3);
 }
 
 .right_buttons_container
@@ -47,6 +65,12 @@
     font-size: 30px;
     color: black;
     white-space: nowrap;
-    
+
+}
+
+.right_buttons:hover
+{
+    filter: brightness(1.3);
+    cursor: pointer;
 }
 

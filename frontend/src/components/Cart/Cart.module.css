@@ -1,0 +1,136 @@
+.cartContainer {
+    position: fixed;
+    top: 50%; /* Отступ сверху 50% от высоты экрана */
+    left: 50%; /* Отступ слева 50% от ширины экрана */
+    transform: translate(-50%, -50%); /* Сдвигаем на 50% назад по горизонтали и вертикали, чтобы центрировать */
+    background: #bda280; /* Ваш фон */
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 70%;
+    max-width: 800px;
+    height: 80%;
+    overflow-y: auto; /* Добавляем вертикальный скролл, если содержимое выходит за границы */
+    font-family: 'Handjet', sans-serif;
+}
+
+.title {
+    font-size: 32px;
+    text-align: center; /* Горизонтальное выравнивание по центру */
+    margin-top: 10px; /* Оставляем верхний отступ */
+    margin-left: 0; /* Убираем дополнительный левый отступ */
+    margin-right: 0; /* Убираем дополнительный правый отступ */
+}
+
+
+.cartList {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+
+.cardTitle {
+    font-size: 32px;
+    text-align: left;
+    margin-left: 245px;
+    margin-top: 10px;
+}
+
+.description {
+    font-family: 'Handjet', sans-serif;
+    font-size: 24px;
+    margin-left: 245px;
+    max-width: 455px;
+    text-align: justify;
+    margin-top: -3%;
+    overflow-wrap: break-word; 
+    word-wrap: break-word;
+}
+
+.card {
+    width: 780px;
+    min-height: 145px;
+    background: #d8bc9b;
+    display: flex;
+    border-radius: 15px;
+    position: relative;
+    line-height: 0.9;
+    flex-direction: column;
+    margin-bottom: 20px; /* Добавляем пространство между карточками */
+}
+
+
+.image {
+    position: absolute;
+    height: 100%;
+    object-fit:fill;
+    width: 30%;
+    border-radius: 15px;
+    text-align: left;
+}
+
+.buttons {
+    display: flex;
+    margin-left: 245px;
+    gap: 5px;
+    margin-top: -2.5%;
+}
+
+.cartItem h4 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.cartItem p {
+    font-size: 16px;
+    color: #555;
+    text-align: justify;
+    margin-top: 0;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.removeButton {
+    padding: 8px 12px;
+    background-color: #ff4d4d; /* Красная кнопка */
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.removeButton:hover {
+    background-color: #d93636; /* Темнее при наведении */
+}
+
+
+
+
+.confirmButton {
+    padding: 12px 25px;
+    background-color: #28a745; /* Зеленая кнопка */
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    width: 100%;
+    margin-top: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.confirmButton:hover {
+    background-color: #218838; /* Темнее при наведении */
+}
+
+.emptyCartMessage {
+    text-align: center;
+    font-size: 18px;
+    color: #888;
+    margin-top: 50px;
+}
