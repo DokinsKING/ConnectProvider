@@ -73,6 +73,61 @@ export function Hook() {
     setSearchQuery(searchText); // Обновляем поисковый запрос
   };
 
+  const createApplication = async (cartItems) => {
+    try {
+      // 1. Создаем заявку
+      const response = await fetch(`http://127.0.0.1:8000/api/applications/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          status: 'draft', // Статус заявки "Черновик"
+          created_at: new Date().toISOString(),
+          creator: 1
+        }),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        console.log('Заявка успешно создана', data);
+        const applicationId = data.id; // Получаем ID созданной заявки
+  
+        // 2. После создания заявки, для каждой услуги отправляем отдельный запрос в application-services
+        for (let item of cartItems) {
+          const serviceResponse = await fetch(`http://127.0.0.1:8000/api/application-services/`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              application: applicationId,  // ID созданной заявки
+              service: item.id,  // ID услуги из корзины
+            }),
+          });
+  
+          const serviceData = await serviceResponse.json();
+  
+          if (serviceResponse.ok) {
+            console.log('Запись в application-services успешно создана', serviceData);
+          } else {
+            console.error('Ошибка при создании записи в application-services', serviceData);
+          }
+        }
+  
+        return data;
+      } else {
+        console.error('Ошибка при создании заявки', data);
+        return null;
+      }
+  
+    } catch (error) {
+      console.error('Ошибка при отправке данных:', error);
+    }
+  };
+  
+
   return {
     navigate,
     location,
@@ -80,5 +135,6 @@ export function Hook() {
     applications,
     searchQuery,
     handleSearchClick,
+    createApplication,
   };
 }

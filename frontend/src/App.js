@@ -13,7 +13,7 @@ function App() {
   return (
     <>
       <div className={styles.curtain}>
-        <div className={styles.full_logo} onClick={() => hook.navigate("/main")}>
+        <div className={styles.full_logo} onClick={() => hook.navigate("")}>
           <span className={styles.logo}>IS-COM</span>
           <span className={styles.under_logo}>ваш надежный <br />провайдер!</span>
         </div>
@@ -29,7 +29,7 @@ function App() {
       </div>
 
       <Routes>
-        <Route path="/main" element={<MainPage hook={hook}/>} />
+        <Route path="" element={<MainPage hook={hook}/>} />
         <Route
           path="/services"
           element={
@@ -37,6 +37,7 @@ function App() {
               navigate={hook.navigate}
               services={hook.services}
               handleSearchClick={hook.handleSearchClick}
+              createApplication={hook.createApplication}
             />
           }
         />

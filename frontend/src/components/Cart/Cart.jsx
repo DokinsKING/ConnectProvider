@@ -1,11 +1,19 @@
 import styles from './Cart.module.css'; // Путь к стилям корзины
 
-export function Cart({ cartItems, setCartItems }) {
+export function Cart({ cartItems, setCartItems, createApplication }) {
     // Функция для удаления товара из корзины
     const removeFromCart = (index) => {
         const updatedCart = cartItems.filter((_, i) => i !== index); // Удаляем товар по индексу
         setCartItems(updatedCart); // Обновляем корзину
     };
+
+    const confirmApplication = async () => {
+        console.log("Конфирумаю");
+        const data = await createApplication(cartItems); // Вызываем функцию из хука
+        if (data) {
+          setCartItems([]); // Очистить корзину после успешного создания заявки
+        }
+      };
 
     return (
         <div className={styles.cartContainer}>
@@ -26,7 +34,7 @@ export function Cart({ cartItems, setCartItems }) {
                             </li>
                         ))}
                     </ul>
-                    <button className={styles.confirmButton} onClick={() => console.log("Подтвердить добавление в заявки")}>
+                    <button className={styles.confirmButton} onClick={confirmApplication}>
                         Подтвердить добавление в заявки
                     </button>
                 </div>

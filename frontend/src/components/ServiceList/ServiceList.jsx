@@ -4,7 +4,7 @@ import { ServiceCard } from './../ServiceCard/ServiceCard';
 import { Cart } from './../Cart/Cart'; // Импортируем компонент корзины
 import CartIcon from "./CartIcon.png";
 
-export function ServiceList({ navigate, services, handleSearchClick }) {
+export function ServiceList({ navigate, services, handleSearchClick, createApplication }) {
     const [cartItems, setCartItems] = useState([]); // Состояние для хранения товаров в корзине
     const [isCartVisible, setIsCartVisible] = useState(false); // Состояние для видимости корзины
 
@@ -78,6 +78,7 @@ export function ServiceList({ navigate, services, handleSearchClick }) {
                 <Cart
                     cartItems={cartItems}
                     setCartItems={setCartItems} // Передаем возможность изменения корзины
+                    createApplication={createApplication}
                 />
             )}
         </div>
