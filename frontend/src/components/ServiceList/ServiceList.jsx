@@ -8,6 +8,14 @@ export function ServiceList({ navigate, services, handleSearchClick, createAppli
     const [cartItems, setCartItems] = useState([]); // Состояние для хранения товаров в корзине
     const [isCartVisible, setIsCartVisible] = useState(false); // Состояние для видимости корзины
 
+    // Загружаем корзину из localStorage, если она есть
+    useEffect(() => {
+        const savedCart = localStorage.getItem('cart');
+        if (savedCart) {
+            setCartItems(JSON.parse(savedCart)); // Загружаем сохраненную корзину
+        }
+    }, []);
+
     // Функция для добавления товара в корзину
     const addToCart = (id, name, description, image) => {
         // Проверяем, есть ли уже товар с таким id в корзине
@@ -16,7 +24,12 @@ export function ServiceList({ navigate, services, handleSearchClick, createAppli
         if (!isItemInCart) {
             // Добавляем товар в корзину, если его там нет
             const newItem = { id, name, description, image };
-            setCartItems((prevItems) => [...prevItems, newItem]); // Добавляем новый товар в корзину
+            setCartItems((prevItems) => {
+                const updatedItems = [...prevItems, newItem];
+                // Сохраняем корзину в localStorage
+                localStorage.setItem('cart', JSON.stringify(updatedItems));
+                return updatedItems;
+            });
         }
     };
 
@@ -30,7 +43,9 @@ export function ServiceList({ navigate, services, handleSearchClick, createAppli
         if (cartItems.length === 0) {
             setIsCartVisible(false); // Скрыть корзину, если она пуста
         }
-    }, [cartItems]); // Этот эффект срабатывает при изменении корзины
+        // Сохраняем корзину в localStorage
+        localStorage.setItem('cart', JSON.stringify(cartItems));
+    }, [cartItems]);
 
     return (
         <div className={styles.container}>

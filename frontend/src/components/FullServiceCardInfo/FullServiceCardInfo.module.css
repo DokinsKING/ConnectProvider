@@ -38,3 +38,12 @@
     max-width: 416px;
     color: black;
 }
+
+.pathway
+{
+    font-size: 30px;
+    font-family: 'Handjet', sans-serif;
+    position: absolute;
+    top: -2%;
+    left: 6%;
+}

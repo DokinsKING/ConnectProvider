@@ -20,7 +20,11 @@ export function Applications({ applications }) {
               <tr className={styles.row} key={application.id}>
                 <td>{application.status}</td>  {/* Статус заявки */}
                 <td>{new Date(application.created_at).toLocaleString('ru-RU')}</td>  {/* Дата создания */}
-                <td>{new Date(application.completion_date).toLocaleString('ru-RU')}</td> {/* Дата завершения */}
+                <td>
+                {application.completion_date ? 
+                  new Date(application.completion_date).toLocaleString('ru-RU') : 
+                  'Неизвестно'}
+              </td> {/* Дата завершения, если есть, или "Неизвестно" */}
               </tr>
             ))}
           </tbody>

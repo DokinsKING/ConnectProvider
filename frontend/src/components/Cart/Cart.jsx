@@ -5,15 +5,18 @@ export function Cart({ cartItems, setCartItems, createApplication }) {
     const removeFromCart = (index) => {
         const updatedCart = cartItems.filter((_, i) => i !== index); // Удаляем товар по индексу
         setCartItems(updatedCart); // Обновляем корзину
+        // Сохраняем обновленную корзину в localStorage
+        localStorage.setItem('cart', JSON.stringify(updatedCart));
     };
 
     const confirmApplication = async () => {
-        console.log("Конфирумаю");
         const data = await createApplication(cartItems); // Вызываем функцию из хука
         if (data) {
-          setCartItems([]); // Очистить корзину после успешного создания заявки
+            setCartItems([]); // Очистить корзину после успешного создания заявки
+            // Также очищаем корзину в localStorage
+            localStorage.removeItem('cart');
         }
-      };
+    };
 
     return (
         <div className={styles.cartContainer}>

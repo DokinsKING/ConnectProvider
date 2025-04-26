@@ -12,7 +12,7 @@ function App() {
 
   return (
     <>
-      <div className={styles.curtain}>
+      <nav className={styles.navbar}>
         <div className={styles.full_logo} onClick={() => hook.navigate("")}>
           <span className={styles.logo}>IS-COM</span>
           <span className={styles.under_logo}>ваш надежный <br />провайдер!</span>
@@ -26,7 +26,8 @@ function App() {
             Заявки
           </button>
         </div>
-      </div>
+      </nav>
+
 
       <Routes>
         <Route path="" element={<MainPage hook={hook}/>} />
@@ -41,7 +42,7 @@ function App() {
             />
           }
         />
-        <Route path="/services/:id" element={<FullServiceCardInfo services={hook.services}/>} />
+        <Route path="/services/:id" element={<FullServiceCardInfo services={hook.services} location={hook.location}/>} />
         <Route path="/applications" element={<Applications applications={hook.applications}/>} />
       </Routes>
     </>

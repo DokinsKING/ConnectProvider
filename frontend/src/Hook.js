@@ -58,11 +58,7 @@ export function Hook() {
   }, [type]);
 
   useEffect(() => {
-    if(searchQuery !== "")
-    {
-      console.log("Эффект изза кваери")
       fetchData();
-    }
   }, [searchQuery]);
 
   // Обработчик изменения поискового запроса
