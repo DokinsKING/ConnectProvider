@@ -1,0 +1,77 @@
+.full_logo
+{
+    margin-top: 30px;
+    width: 300px;
+}
+
+
+.logo {
+    font-family: 'Inspiration', sans-serif;
+    font-size: 70px; /* Установим точный размер */
+    color: #ffc073;
+    -webkit-text-stroke: 0.6px black;
+    text-shadow: 
+        1px 1px 2px black,   /* Внешняя тень */
+        0px -4px 5px black,  /* Внешняя тень с другой стороны */
+        0px 0px 25px black;
+    margin-top: 30px; /* Смещение от верхнего края */
+    margin-left: 60px; /* Смещение от левого края */
+    cursor: pointer;
+}
+
+.logo:hover
+{
+    filter: brightness(1.3);
+}
+
+.under_logo {
+    font-family: 'Handjet', sans-serif;
+    text-align: center;
+    font-size: 35px; /* Установим точный размер */
+    color: #ffc073;
+    -webkit-text-stroke: 0.2px black;
+    text-shadow: 
+    1px 1px 4px black,
+    0px -1px 4px black,
+    0px 0px 25px black; 
+    position: absolute;
+    top: 115px;
+    left: 95px;
+    cursor: pointer;
+}
+
+.under_logo:hover
+{
+    filter: brightness(1.3);
+}
+
+.right_buttons_container
+{
+    gap: 30px;
+    display: flex;
+    flex-direction: row; /* Элементы располагаются вертикально */
+    align-items: flex-end; /* Прижимаем к правому краю */
+    position: absolute;
+    right: 70px;
+    top: 40px;
+}
+
+.right_buttons {
+    background-color: #ffa940;
+    border-radius: 15px;
+    padding: 0px 15px;
+    box-shadow: 0 0 0 1px black; /* Черная обводка */
+    display: inline-block;
+    font-family: 'Handjet', sans-serif;
+    font-size: 30px;
+    color: black;
+    white-space: nowrap;
+
+}
+
+.right_buttons:hover
+{
+    filter: brightness(1.3);
+    cursor: pointer;
+}
+

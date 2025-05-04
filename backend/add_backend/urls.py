@@ -1,15 +1,11 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
+from django.urls import path
 from . import views
 
-# Создаем роутер для автоматической генерации маршрутов для ViewSet-ов
-router = DefaultRouter()
-router.register(r'services', views.ServiceViewSet)
-router.register(r'applications', views.ApplicationViewSet)
-router.register(r'application-services', views.ApplicationServiceViewSet)
-router.register(r'users', views.UserViewSet)
-
-# Здесь подключаем только API маршруты
 urlpatterns = [
-    path('api/', include(router.urls)),  # Подключаем все API-роуты
+    path('api/services/', views.ServiceList.as_view(), name='service-list'),
+    path('api/services/<int:pk>/', views.ServiceDetail.as_view(), name='service-detail'),
+    path('api/applications/', views.ApplicationList.as_view(), name='application-list'),
+    path('api/applications/<int:pk>/', views.ApplicationDetail.as_view(), name='application-detail'),
+    path('api/application-services/', views.ApplicationServicesList.as_view(), name='application-services-list'),
+    path('api/users/', views.UserList.as_view(), name='user-list'),
 ]

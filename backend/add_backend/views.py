@@ -1,73 +1,138 @@
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework import viewsets
 from .models import Service, Application, ApplicationService, User
-from .serializers import ServiceSerializer, ApplicationSerializer, ApplicationServiceSerializer,UserSerializer
+from .serializers import ServiceSerializer, ApplicationSerializer, ApplicationServiceSerializer, UserSerializer
 from django_filters import rest_framework as filters
-from django_filters.rest_framework import DjangoFilterBackend
 
 # Фильтр для услуг
 class ServiceFilter(filters.FilterSet):
-    # Фильтрация по имени услуги (поиск по части имени)
-    name = filters.CharFilter(field_name="name", lookup_expr='icontains')  # Поиск по части имени услуги
-    # Фильтрация по цене
-    price_min = filters.NumberFilter(field_name="price", lookup_expr='gte')  # Минимальная цена
-    price_max = filters.NumberFilter(field_name="price", lookup_expr='lte')  # Максимальная цена
+    name = filters.CharFilter(field_name="name", lookup_expr='icontains')
+    price_min = filters.NumberFilter(field_name="price", lookup_expr='gte')
+    price_max = filters.NumberFilter(field_name="price", lookup_expr='lte')
 
     class Meta:
         model = Service
         fields = ['name', 'price_min', 'price_max']
 
-# ViewSet для управления услугами
-class ServiceViewSet(viewsets.ModelViewSet):
-    queryset = Service.objects.all()
-    serializer_class = ServiceSerializer
-    filter_backends = (DjangoFilterBackend,)  # Используем фильтрацию
-    filterset_class = ServiceFilter  # Подключаем наш фильтр
 
-# ViewSet для управления заявками
-class ApplicationViewSet(viewsets.ModelViewSet):
-    queryset = Application.objects.all()
-    serializer_class = ApplicationSerializer
+# API View для работы с услугами
+class ServiceList(APIView):
+    filterset_class = ServiceFilter
 
-    def perform_update(self, serializer):
-        instance = self.get_object()
-
-        if instance.status == 'draft' and 'status' in self.request.data:
-            # Разрешаем изменять статус только если он в черновике
-            serializer.save()
-        elif instance.status == 'formatted' and 'status' in self.request.data:
-            # Только модератор может изменить статус на завершен или отклонен
-            if self.request.user == instance.moderator:
-                serializer.save()
-            else:
-                return Response({"detail": "You don't have permission to change the status."}, status=status.HTTP_403_FORBIDDEN)
+    def get(self, request, *args, **kwargs):
+        services = Service.objects.all()
+        
+        # Применяем фильтрацию вручную
+        filterset = self.filterset_class(request.GET, queryset=services)
+        if filterset.is_valid():
+            filtered_services = filterset.qs
         else:
-            return Response({"detail": "Invalid status change."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "Invalid filter parameters."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Передаем контекст запроса в сериализатор
+        serializer = ServiceSerializer(filtered_services, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    def post(self, request, *args, **kwargs):
+        serializer = ServiceSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class ServiceDetail(APIView):
+    def get(self, request, pk, *args, **kwargs):
+        try:
+            service = Service.objects.get(pk=pk)
+        except Service.DoesNotExist:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Передаем контекст запроса в сериализатор
+        serializer = ServiceSerializer(service, context={'request': request})
+        return Response(serializer.data)
+
+# API View для работы с заявками
+class ApplicationList(APIView):
+
+    def get(self, request, *args, **kwargs):
+        applications = Application.objects.all()  # Получаем все заявки
+        serializer = ApplicationSerializer(applications, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, *args, **kwargs):
+        serializer = ApplicationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class ApplicationDetail(APIView):
+    def get(self, request, pk, *args, **kwargs):
+        try:
+            application = Application.objects.get(pk=pk)
+        except Application.DoesNotExist:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = ApplicationSerializer(application)
+        return Response(serializer.data)
+    
+
+# API View для работы с заявками и услугами
+class ApplicationServicesList(APIView):
+    def get(self, request, pk, *args, **kwargs):
+        try:
+            application_service = ApplicationService.objects.get(pk=pk)
+        except ApplicationService.DoesNotExist:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = ApplicationServiceSerializer(application_service)
+        return Response(serializer.data)
+
+    def post(self, request, *args, **kwargs):
+        serializer = ApplicationServiceSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk, *args, **kwargs):
+        try:
+            application_service = ApplicationService.objects.get(pk=pk)
+        except ApplicationService.DoesNotExist:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = ApplicationServiceSerializer(application_service, data=request.data, partial=True)
+        if serializer.is_valid():
+            updated_instance = serializer.save()
+            if 'quantity' in request.data:
+                updated_instance.quantity = request.data['quantity']
+                updated_instance.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, *args, **kwargs):
+        try:
+            application_service = ApplicationService.objects.get(pk=pk)
+        except ApplicationService.DoesNotExist:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        application_service.delete()
+        return Response({"detail": "Deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
 
 
-class ApplicationServiceViewSet(viewsets.ModelViewSet):
-    queryset = ApplicationService.objects.all()
-    serializer_class = ApplicationServiceSerializer
+# API View для работы с пользователями
+class UserList(APIView):
 
-    def perform_create(self, serializer):
-        # Устанавливаем связи между заявками и услугами
-        serializer.save()
+    def get(self, request, *args, **kwargs):
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
 
-    def perform_destroy(self, instance):
-        # Удаление связи заявки и услуги
-        instance.delete()
-
-    def perform_update(self, serializer):
-        # Обновление количества или других полей в связи
-        instance = serializer.save()
-        # Пример изменения количества
-        if 'quantity' in self.request.data:
-            instance.quantity = self.request.data['quantity']
-            instance.save()
-
-
-# ViewSet для управления услугами
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+    def post(self, request, *args, **kwargs):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
