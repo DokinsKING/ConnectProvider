@@ -1,0 +1,6 @@
+@font-face {
+	font-family: 'Kyiv Type Titling';
+	src: url('Kyiv_TypeTitling.woff2') format('woff2'), url('Kyiv_TypeTitling.woff') format('woff');
+	font-weight: normal;
+	font-style: normal;
+}
