@@ -1,9 +1,13 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Service, Application, ApplicationService, User
+from .models import Service, Application, ApplicationService
+from django.contrib.auth.models import User
 from .serializers import ServiceSerializer, ApplicationSerializer, ApplicationServiceSerializer, UserSerializer
 from django_filters import rest_framework as filters
+from rest_framework.permissions import AllowAny
+from rest_framework_simplejwt.tokens import RefreshToken
+
 
 # Фильтр для услуг
 class ServiceFilter(filters.FilterSet):
@@ -54,9 +58,8 @@ class ServiceDetail(APIView):
 
 # API View для работы с заявками
 class ApplicationList(APIView):
-
     def get(self, request, *args, **kwargs):
-        applications = Application.objects.all()  # Получаем все заявки
+        applications = Application.objects.all()
         serializer = ApplicationSerializer(applications, many=True)
         return Response(serializer.data)
 
@@ -124,7 +127,6 @@ class ApplicationServicesList(APIView):
 
 # API View для работы с пользователями
 class UserList(APIView):
-
     def get(self, request, *args, **kwargs):
         users = User.objects.all()
         serializer = UserSerializer(users, many=True)
@@ -135,4 +137,18 @@ class UserList(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class RegisterUserView(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            # Создаем JWT токен для нового пользователя
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                'access': str(refresh.access_token),
+                'refresh': str(refresh),
+            }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

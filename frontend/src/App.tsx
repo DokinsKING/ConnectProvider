@@ -4,7 +4,10 @@ import { ServiceList } from "./pages/ServiceList/ServiceList";
 import { MainPage } from "./pages/MainPage/MainPage";
 import { Applications } from "./pages/Applications/Applications";
 import { Routes, Route } from 'react-router-dom'; // Импортируем необходимые компоненты
+import { Login } from "./pages/Login/Login";
+import { Register } from "./pages/Register/Register";
 import styles from "./App.module.css";
+
 
 function App() {
   const hook = Hook(); // Получаем хук
@@ -28,7 +31,9 @@ function App() {
       </nav>
 
       <Routes>
-        <Route path="/" element={<MainPage hook={hook} />} />
+        <Route path="/" element={<MainPage navigate={hook.navigate} />} />
+        <Route path="/login" element={<Login navigate={hook.navigate} login={hook.login} />} />
+        <Route path="/register" element={<Register navigate={hook.navigate} register={hook.register} />} />
         <Route path="/services">
           <Route index element={<ServiceList 
                                   navigate={hook.navigate} 

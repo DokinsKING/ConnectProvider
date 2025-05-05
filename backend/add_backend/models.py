@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User as Moderator
+from django.contrib.auth.models import User
 
 # Статусы заявки
 class ApplicationStatus(models.TextChoices):
@@ -13,15 +13,6 @@ class ApplicationStatus(models.TextChoices):
 class ServiceStatus(models.TextChoices):
     ACTIVE = 'active', 'Действует'
     DELETED = 'deleted', 'Удален'
-
-# Модель пользователя
-class User(models.Model):
-    name = models.CharField(max_length=255)
-    email = models.EmailField()
-    role = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.name  # Теперь при отображении будет выводиться только имя услуги
 
 # Модель услуги
 class Service(models.Model):
@@ -44,11 +35,11 @@ class Application(models.Model):
     form_date = models.DateTimeField(null=True, blank=True)
     completion_date = models.DateTimeField(null=True, blank=True)
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='created_applications')
-    moderator = models.ForeignKey(Moderator, on_delete=models.SET_NULL, null=True, related_name='moderated_applications')
+    moderator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='moderated_applications')
 
     def __str__(self):
         # Проверка, если creator существует
-        creator_name = self.creator.name if self.creator else "No creator"
+        creator_name = self.creator.username if self.creator else "No creator"
         return f"Заявка #{self.pk} от {creator_name}"
 
 # Связующая таблица для заявки и услуги

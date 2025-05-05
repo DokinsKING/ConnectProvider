@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Service, Application, ApplicationService, User
+from .models import Service, Application, ApplicationService
+from django.contrib.auth.models import User
 
 # Сериализатор для услуги
 class ServiceSerializer(serializers.ModelSerializer):
@@ -37,3 +38,18 @@ class ApplicationSerializer(serializers.ModelSerializer):
         if kwargs.get('context') and kwargs['context'].get('request') and kwargs['context']['request'].method == 'POST':
             self.fields.pop('application_services', None)  # Исключаем поле для POST-запросов
         super().__init__(*args, **kwargs)
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username', 'password', 'email']
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        user = User.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            password=validated_data['password']
+        )
+        return user
+

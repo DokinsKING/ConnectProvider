@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'storages',
     'corsheaders',
-    'django_filters'
+    'django_filters',
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
@@ -122,7 +123,13 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',  # Возвращать данные в формате JSON
         # Если вы хотите поддерживать браузерное отображение API, можно оставить:
         'rest_framework.renderers.BrowsableAPIRenderer',  # Для удобного отображения API в браузере
-    ]
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',  # По умолчанию все представления требуют аутентификации
+    ),
 }
 
 DEFAULT_FILE_STORAGE = "minio.storage.storage.MinioMediaStorage"
@@ -139,6 +146,8 @@ MINIO_STORAGE_USE_HTTPS = False
 
 MINIO_STORAGE_MEDIA_URL = f'{os.getenv("MINIO_CONTENT_ENDPOINT") or "localhost:9000"}/images'
 MINIO_STORAGE_STATIC_URL = f'{os.getenv("MINIO_CONTENT_ENDPOINT") or "localhost:9000"}/static'
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/

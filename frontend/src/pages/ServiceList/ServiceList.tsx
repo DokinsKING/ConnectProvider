@@ -7,22 +7,26 @@ import CartIcon from "./CartIcon.png";
 export function ServiceList({ navigate, services, handleSearchClick, createApplication } : { navigate : any, services : any[], handleSearchClick : any, createApplication : any }) {
     const [cartItems, setCartItems] = useState<any[]>([]);
     const [isCartVisible, setIsCartVisible] = useState(false); // Состояние для видимости корзины
+    const [isCartLoaded, setIsCartLoaded] = useState(false); // Флаг для загрузки корзины
 
     // Загружаем корзину из localStorage, если она есть
     useEffect(() => {
-        const savedCart = localStorage.getItem('cart');
-        if (savedCart) {
-            setCartItems(JSON.parse(savedCart)); // Загружаем сохраненную корзину
+        if (!isCartLoaded) {
+            const savedCart = localStorage.getItem('cart');
+            console.log("Карт в начале")
+            console.log(savedCart)
+            if (savedCart) {
+                setCartItems(JSON.parse(savedCart)); // Загружаем сохраненную корзину из localStorage
+            }
+            setIsCartLoaded(true); // Устанавливаем флаг, чтобы больше не загружать корзину
         }
-    }, []);
+    }); // Этот useEffect сработает только один раз, когда isCartLoaded = false
 
     // Функция для добавления товара в корзину
     const addToCart = (id : number, name : string, description : string, image : string) => {
-        // Проверяем, есть ли уже товар с таким id в корзине
-        const isItemInCart = cartItems.some(item => item.id === id);
+        const isItemInCart = cartItems.some(item => item.id === id);  // Проверка на наличие товара в корзине
 
         if (!isItemInCart) {
-            // Добавляем товар в корзину, если его там нет
             const newItem = { id, name, description, image };
             setCartItems((prevItems) => {
                 const updatedItems = [...prevItems, newItem];
@@ -43,9 +47,12 @@ export function ServiceList({ navigate, services, handleSearchClick, createAppli
         if (cartItems.length === 0) {
             setIsCartVisible(false); // Скрыть корзину, если она пуста
         }
+        console.log("Сохраняю catitems")
+        console.log(cartItems)
         // Сохраняем корзину в localStorage
-        localStorage.setItem('cart', JSON.stringify(cartItems));
-    }, [cartItems]);
+        if(isCartLoaded) localStorage.setItem('cart', JSON.stringify(cartItems));
+    }, [cartItems]); // Перезаписываем localStorage при изменении корзины
+
 
     return (
         <div className={styles.container}>
@@ -87,6 +94,7 @@ export function ServiceList({ navigate, services, handleSearchClick, createAppli
                     title="Документы в корзине" 
                 />
             )}
+            
 
             {/* Если корзина видимая, показываем содержимое корзины */}
             {isCartVisible && cartItems.length !== 0 && (

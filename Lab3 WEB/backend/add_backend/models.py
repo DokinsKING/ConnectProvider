@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Статусы заявки
 class ApplicationStatus(models.TextChoices):
@@ -13,21 +14,12 @@ class ServiceStatus(models.TextChoices):
     ACTIVE = 'active', 'Действует'
     DELETED = 'deleted', 'Удален'
 
-# Модель пользователя
-class User(models.Model):
-    name = models.CharField(max_length=255)
-    email = models.EmailField()
-    role = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.name  # Теперь при отображении будет выводиться только имя услуги
-
 # Модель услуги
 class Service(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
     price = models.IntegerField()
-    image = models.URLField()
+    image = models.URLField(max_length=500)
     status = models.CharField(max_length=10, choices=ServiceStatus.choices, default=ServiceStatus.ACTIVE)
     def soft_delete(self):
         self.status = ServiceStatus.DELETED
@@ -47,7 +39,7 @@ class Application(models.Model):
 
     def __str__(self):
         # Проверка, если creator существует
-        creator_name = self.creator.name if self.creator else "No creator"
+        creator_name = self.creator.username if self.creator else "No creator"
         return f"Заявка #{self.pk} от {creator_name}"
 
 # Связующая таблица для заявки и услуги

@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Service, Application, ApplicationService, User
+from .models import Service, Application, ApplicationService
+from django.contrib.auth.models import User
 
 # Сериализатор для услуги
 class ServiceSerializer(serializers.ModelSerializer):
@@ -41,4 +42,14 @@ class ApplicationSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = '__all__'
+        fields = ['username', 'password', 'email']
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        user = User.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            password=validated_data['password']
+        )
+        return user
+
