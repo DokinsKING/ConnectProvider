@@ -1,0 +1,105 @@
+/* Login.module.css */
+
+.login_container {
+    position: absolute;  /* Позиционируем относительно окна */
+    top: 50%;            /* Сдвигаем на 50% от верхней границы родителя */
+    left: 50%;           /* Сдвигаем на 50% от левой границы родителя */
+    transform: translate(-50%, -50%); /* Центрируем элемент */
+    width: 400px;        /* Устанавливаем разумную ширину для контейнера */
+    min-height: 400px;   /* Минимальная высота контейнера */
+    background: #e5c59db2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Центрирование по вертикали */
+    align-items: center;     /* Центрирование по горизонтали */
+    border-radius: 15px;
+    font-family: 'Handjet', sans-serif;
+    padding: 10px;
+}
+
+.login_container h2 {
+    font-size: 32px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.login_container form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.login_container label {
+    font-size: 18px;
+    font-weight: bold;
+    text-align: left;
+}
+
+.login_container input {
+    height: 30px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    width: 98%;
+}
+
+.error {
+    color: red;
+    font-size: 14px;
+    text-align: center;
+}
+
+.button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 10px;
+    background-color: #d68e36;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;  
+}
+
+.button:hover {
+    background-color: #ec9d3d;
+}
+
+.register-link {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.register-link p {
+    font-size: 16px;
+}
+
+.register-button {
+    background: none;
+    border: none;
+    color: #3f3905;;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.register-button:hover {
+    color: #867a0b;
+}
+
+.back-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 10px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+}
+
+.back-button:hover {
+    background-color: #e53935;
+}

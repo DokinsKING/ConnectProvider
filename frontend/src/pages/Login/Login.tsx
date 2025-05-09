@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { LoginHook } from "./LoginHook";
+import { useState } from 'react';
+import { LoginHook } from './LoginHook';
+import styles from './Login.module.css'; // Импортируем стили из .module.css
 
 export function Login() {
     const [username, setUsername] = useState('');
@@ -12,7 +13,7 @@ export function Login() {
     };
 
     return (
-        <div className="login-container">
+        <div className={styles.login_container}>
             <h2>Вход в систему</h2>
             <form onSubmit={onSubmit}>
                 <div>
@@ -35,16 +36,17 @@ export function Login() {
                         required
                     />
                 </div>
-                {error && <div className="error">{error}</div>}
-                <button onClick={goToMain} type="submit">Войти</button>
+                {error && <div className={styles.error}>{error}</div>}
+                <button className={styles.button} onClick={goToMain} type="submit">Войти</button>
             </form>
 
-            <div className="register-link">
-                <p>Нет аккаунта? <button onClick={goToRegister}>Зарегистрироваться</button></p>
+            <div className={styles.register_link}>
+                <p>Нет аккаунта? <button className={styles['register-button']} onClick={goToRegister}>Зарегистрироваться</button></p>
             </div>
 
             <button 
                 type="button"
+                className={styles['back-button']}
                 onClick={handleGoBack} // Возврат на 1 страницу назад в истории
             >
                 Назад

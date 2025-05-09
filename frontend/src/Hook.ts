@@ -1,38 +1,72 @@
-import { useState } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 export function Hook() {
     const usenavigate = useNavigate();
     const location = useLocation();
-    const [type, setType] = useState("begin");
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-    const navigate = (pathname : string) => {
-        if(pathname === "-1") {
+    // Проверка авторизации при загрузке и изменении токена
+    useEffect(() => {
+        const token = localStorage.getItem('access_token');
+        setIsLoggedIn(!!token);
+    }, [location.pathname]); // Добавляем зависимость от пути
+
+    const navigate = (pathname: string) => {
+        if (pathname === "-1") {
             usenavigate(-1);
             return;
         }
-        const newType = pathname.split('/')[1];
-        
-        if(newType != type)
-        {
-            getAccessToken().then(token => {
-            if (token || !newType || newType === "" || newType  === "register"|| newType === "services") {
+
+        getAccessToken().then(token => {
+            if (token || pathname === "/" || pathname === "/register" || pathname.startsWith("/services")) {
                 usenavigate(pathname);
-                setType(newType);
-            }
-            else
-            {
+            } else {
                 usenavigate("/login");
-                setType("login");
             }
         });
-        }
     };
+
+    const handleLogout = async () => {
+    try {
+        // Проверяем валидность текущего токена
+        const token = await getAccessToken();
+        
+        // Если токен есть (пользователь авторизован)
+        if (token) {
+            const refreshToken = localStorage.getItem('refresh_token');
+            
+            // Отправляем запрос на сервер для аннулирования токенов
+            await fetch('/api/logout/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ refresh_token: refreshToken })
+            });
+        }
+        
+        // В любом случае очищаем хранилище
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        setIsLoggedIn(false);
+        usenavigate('/login');
+        
+    } catch (error) {
+        console.error('Logout failed:', error);
+        // Даже если произошла ошибка, выполняем очистку
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        setIsLoggedIn(false);
+        usenavigate('/login');
+    }
+};
 
     const getAccessToken = async () => {
         let token = localStorage.getItem('access_token');
         if (token && isTokenExpired(token)) {
-            token = await refreshAccessToken();  // Если токен истек, обновляем его
+            token = await refreshAccessToken();
         }
         return token;
     };
@@ -40,10 +74,10 @@ export function Hook() {
     const isTokenExpired = (token: string) => {
         try {
             const payload = JSON.parse(atob(token.split('.')[1]));
-            const expiry = payload.exp * 1000; // Expiry time in ms
+            const expiry = payload.exp * 1000;
             return Date.now() > expiry;
         } catch (e) {
-            return true;  // Если не удалось декодировать, токен истек
+            return true;
         }
     };
 
@@ -63,10 +97,12 @@ export function Hook() {
             const data = await response.json();
             if (response.ok && data.access) {
                 localStorage.setItem('access_token', data.access);
+                setIsLoggedIn(true);
                 return data.access;
             } else {
                 localStorage.removeItem('access_token');
                 localStorage.removeItem('refresh_token');
+                setIsLoggedIn(false);
                 return null;
             }
         } catch (error) {
@@ -79,5 +115,7 @@ export function Hook() {
         getAccessToken,
         navigate,
         location,
+        isLoggedIn,
+        handleLogout
     };
 }

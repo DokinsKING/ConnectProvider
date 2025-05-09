@@ -1,3 +1,20 @@
+.logout_button {
+  background-color: #ff3333; /* Ярко-красный цвет */
+  color: white;
+  border-radius: 15px;
+  padding: 0px 15px;
+  box-shadow: 0 0 0 1px black;
+  font-family: 'Handjet', sans-serif;
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+.logout_button:hover {
+  background-color: #e60000; /* Темнее при наведении */
+  filter: brightness(1.1);
+  cursor: pointer;
+}
+
 .full_logo
 {
     margin-top: 30px;

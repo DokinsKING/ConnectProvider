@@ -62,7 +62,7 @@ class ServiceDetail(APIView):
 class ApplicationList(APIView):
     def get(self, request, *args, **kwargs):
         # Проверяем, является ли пользователь модератором
-        if request.user.groups.filter(name='Moderators').exists():
+        if request.user.is_staff or request.user.is_superuser:
             # Модератор видит все заявки
             applications = Application.objects.all()
         else:
@@ -96,21 +96,10 @@ class ApplicationDetail(APIView):
 
 # API View для работы с заявками и услугами
 class ApplicationServicesList(APIView):
-    def get(self, request, pk, *args, **kwargs):
-        try:
-            application_service = ApplicationService.objects.get(pk=pk)
-        except ApplicationService.DoesNotExist:
-            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = ApplicationServiceSerializer(application_service)
+    def get(self, request, *args, **kwargs):
+        application_services = ApplicationService.objects.all()  # Note: removed try-except as all() never raises DoesNotExist
+        serializer = ApplicationServiceSerializer(application_services, many=True)  # Added many=True
         return Response(serializer.data)
-
-    def post(self, request, *args, **kwargs):
-        serializer = ApplicationServiceSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk, *args, **kwargs):
         try:
@@ -164,3 +153,13 @@ class RegisterUserView(APIView):
                 'refresh': str(refresh),
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class LogoutView(APIView):
+    def post(self, request):
+        try:
+            refresh_token = request.data["refresh_token"]
+            token = RefreshToken(refresh_token)
+            token.blacklist()  # Добавляем refresh токен в черный список
+            return Response(status=status.HTTP_205_RESET_CONTENT)
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)

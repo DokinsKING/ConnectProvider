@@ -3,23 +3,31 @@ import { FullServiceCardInfo } from "./pages/FullServiceCardInfo/FullServiceCard
 import { ServiceList } from "./pages/ServiceList/ServiceList";
 import { MainPage } from "./pages/MainPage/MainPage";
 import { Applications } from "./pages/Applications/Applications";
-import { Routes, Route } from 'react-router-dom'; // Импортируем необходимые компоненты
+import { Routes, Route } from 'react-router-dom';
 import { Login } from "./pages/Login/Login";
 import { Register } from "./pages/Register/Register";
 import styles from "./App.module.css";
 
-
 function App() {
-  const { navigate } = Hook();
+  const { navigate, isLoggedIn, handleLogout } = Hook();
+
   return (
     <>
       <nav className={styles.navbar}>
-        <div className={styles.full_logo} onClick={() => navigate("")}>
+        <div className={styles.full_logo} onClick={() => navigate("/")}>
           <span className={styles.logo}>IS-COM</span>
           <span className={styles.under_logo}>ваш надежный <br />провайдер!</span>
         </div>
 
         <div className={styles.right_buttons_container}>
+          {isLoggedIn && (
+            <button 
+              className={styles.logout_button}
+              onClick={handleLogout}
+            >
+              Выйти из аккаунта
+            </button>
+          )}
           <button className={styles.right_buttons} onClick={() => navigate("/services")}>
             Услуги
           </button>
