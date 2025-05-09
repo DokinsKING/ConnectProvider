@@ -1,0 +1,25 @@
+{% load static %}
+
+<div class="container">
+    <link rel="stylesheet" href="{% static 'css/applications.css' %}">
+
+    <h1>Заявки</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Статус</th>
+                <th>Дата начала</th>
+                <th>Дата окончания</th>
+            </tr>
+        </thead>
+        <tbody id="requests-body">
+            {% for application in applications %}
+                <tr>
+                    <td>{{ application.get_status_display }}</td>  <!-- Статус заявки -->
+                    <td>{{ application.created_at }}</td>  <!-- Дата создания -->
+                    <td>{{ application.completion_date }}</td>  <!-- Дата завершения -->
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

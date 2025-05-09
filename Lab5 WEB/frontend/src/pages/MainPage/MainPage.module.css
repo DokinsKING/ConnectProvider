@@ -1,0 +1,44 @@
+.container {
+    display: flex;         
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+    text-align: center;
+    cursor: default;
+    margin-top: -90px;
+}
+
+.main_img {
+    width: 23%;
+    opacity: 0.5;
+}
+
+.welcome_text {
+    font-size: 40px;
+    text-shadow: 
+    1px 1px 4px black,
+    0px 0px 25px black; 
+    width: 38%;
+    color: #e6b77a;
+    margin-bottom: 10px;
+}
+
+.main_buttons {
+    
+    font-family: 'Kyiv Type Titling', sans-serif;
+    color: #f3d1a7;
+    font-size: 32px; /* Размер шрифта */
+    color: #ffc073; /* Основной цвет текста */
+    text-shadow: 
+        1px 1px 2px black,   /* Тень слева сверху */
+        0px -4px 5px black,  /* Тень слева снизу */
+        0px 0px 25px black;  /* Тень по центру для создания эффекта свечения */
+    text-align: center; /* Выравнивание текста по центру */
+    margin: 0px 0; /* Отступ сверху и снизу */
+}
+
+.main_buttons:hover
+{
+    filter: brightness(1.8);
+    cursor: pointer;
+}
