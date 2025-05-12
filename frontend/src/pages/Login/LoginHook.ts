@@ -1,39 +1,45 @@
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { login_slice } from './../../redux/userSlice';
+
+
 import { Hook } from './../../Hook';
+import axios from 'axios';
 
 export function LoginHook() {
-    const { navigate } = Hook(); // Получаем navigate из основного хука
+    const dispatch = useDispatch();
+    
+
+    const { navigate } = Hook();
     const [error, setError] = useState<string | null>(null);
 
     const goToRegister = () => navigate('/register');
-
-    const handleGoBack = () => {
-        navigate("-1"); // На 1 страницу назад в истории
-    };
-
+    const handleGoBack = () => navigate("-1");
     const goToMain = () => navigate('/');
 
     const login = async (username: string, password: string) => {
         try {
-            const response = await fetch('/api/token/', {
-                method: 'POST',
+            const response = await axios.post('/api/token/', {
+                username,
+                password
+            }, {
                 headers: {
                     'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, password })
+                }
             });
 
-            const data = await response.json();
-            if (response.ok) {
-                localStorage.setItem('access_token', data.access);
-                localStorage.setItem('refresh_token', data.refresh);
-                return true;
-            } else {
-                throw new Error(data.detail || 'Ошибка авторизации');
-            }
+            localStorage.setItem('access_token', response.data.access);
+            localStorage.setItem('refresh_token', response.data.refresh);
+            return true;
         } catch (error) {
-            console.error("Ошибка при авторизации", error);
-            setError(error instanceof Error ? error.message : 'Неизвестная ошибка');
+            if (axios.isAxiosError(error)) {
+                const errorMessage = error.response?.data?.detail || 'Ошибка авторизации';
+                setError(errorMessage);
+                console.error("Ошибка при авторизации", errorMessage);
+            } else {
+                setError('Неизвестная ошибка');
+                console.error("Неизвестная ошибка при авторизации", error);
+            }
             return false;
         }
     };
@@ -44,7 +50,7 @@ export function LoginHook() {
             if (success) {
                 const referrer = document.referrer;
                 const currentOrigin = window.location.origin;
-                
+                dispatch(login_slice({ username: username }));
                 if (referrer.startsWith(currentOrigin)) {
                     const returnPath = new URL(referrer).pathname;
                     navigate(returnPath);
@@ -54,6 +60,7 @@ export function LoginHook() {
             }
         } catch (error) {
             setError('Ошибка сети или сервер недоступен.');
+            console.error("Сетевая ошибка", error);
         }
     };
 

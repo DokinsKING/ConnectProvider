@@ -9,7 +9,7 @@ export function ServiceCard({ id, name, description, image, addToCart} : { id : 
             <img className={styles.image} src={image} alt={name} />
             <p className={styles.description} dangerouslySetInnerHTML={{ __html: description.replace(/\n/g, '<br>') }} />
             <div className={styles.buttons}>
-                <button onClick={()=>navigate(`/services/${id}`)}>Подробнее</button>
+                <button onClick={()=>navigate(`${id}`)}>Подробнее</button>
                 <button onClick={() => addToCart(id, name, description, image)}>Добавить в заявки</button>
             </div>
         </div>

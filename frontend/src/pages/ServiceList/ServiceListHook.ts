@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
-
+import axios from 'axios';
 
 export function ServiceListHook() {
-    const [services, setServices] = useState<any[]>([]); // any[]
+    const [services, setServices] = useState<any[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [cartItems, setCartItems] = useState<any[]>([]);
     const [isCartVisible, setIsCartVisible] = useState(false);
@@ -11,16 +11,12 @@ export function ServiceListHook() {
     // Функция для загрузки данных о сервисах
     const fetchServices = useCallback(async (url: string) => {
         try {
-            const response = await fetch(url, {
-                method: 'GET',
+            const response = await axios.get(url, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
             });
-
-            if (!response.ok) throw new Error("Network error");
-            const data = await response.json();
-            setServices(data);
+            setServices(response.data);
         } catch (error) {
             console.error("Ошибка при получении данных:", error);
         }
@@ -56,7 +52,6 @@ export function ServiceListHook() {
         setIsCartVisible(!isCartVisible);
     };
 
-
     // Загрузка сохраненной корзины из localStorage
     useEffect(() => {
         if (!isCartLoaded) {
@@ -83,6 +78,6 @@ export function ServiceListHook() {
         toggleCartVisibility,
         isCartVisible,
         cartItems,
-        setCartItems  // Теперь возвращаем setCartItems
+        setCartItems
     };
 }

@@ -2,6 +2,9 @@
     font-family: Arial, sans-serif;
     color: #f4e1c1;
     text-align: center;
+    width: 900px;
+    justify-content: center;
+    margin: 0 auto;
     margin-top: -5%;
 }
 .container table {
@@ -16,10 +19,10 @@
     border: 1px solid black;
 }
 
-.row:active
+.row:hover
 {
-    filter: brightness(1.3);
-    background-color: #241313;
+    cursor: pointer;
+    background-color: rgb(212, 206, 206);
 }
 
 .container th {

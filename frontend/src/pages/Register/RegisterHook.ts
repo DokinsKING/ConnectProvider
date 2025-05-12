@@ -1,31 +1,36 @@
 import { useState } from 'react';
+
+import { useDispatch } from 'react-redux';
+import { login_slice } from './../../redux/userSlice';
+
 import { Hook } from './../../Hook';
+import axios from 'axios';
 
 export function RegisterHook() {
-    const { navigate } = Hook(); // Получаем navigate из основного хука
+    const { navigate } = Hook();
     const [error, setError] = useState<string | null>(null);
+    const dispatch = useDispatch();
+
 
     const goToLogin = () => navigate('/login');
 
     const handleGoBack = () => {
-        navigate("-1"); // На 1 страницу назад в истории
+        navigate("-1");
     };
 
     const register = async (username: string, email: string, password: string) => {
         try {
-            const response = await fetch('/api/register/', { // Убедитесь, что у вас есть эндпоинт для регистрации
-                method: 'POST',
+            const response = await axios.post('/api/register/', {
+                username,
+                email,
+                password
+            }, {
                 headers: {
                     'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, email, password })
+                }
             });
 
-            if (response.ok) {
-                return true;
-            } else {
-                throw new Error('Ошибка регистрации');
-            }
+            return response;
         } catch (error) {
             console.error("Ошибка при регистрации", error);
             return false;
@@ -34,15 +39,21 @@ export function RegisterHook() {
 
     const handleSubmit = async (username: string, email: string, password: string) => {
         try {
-            const response = await register(username, email, password);
-            if (response) {
-                // Переход на страницу логина после успешной регистрации
-                navigate('/login');
+            const isRegistered = await register(username, email, password);
+            if (isRegistered) {
+                localStorage.setItem('access_token', isRegistered.data.access);
+                localStorage.setItem('refresh_token', isRegistered.data.refresh);
+                dispatch(login_slice({ username: username }));
+                navigate('/');
             } else {
                 setError('Ошибка регистрации. Проверьте данные.');
             }
         } catch (error) {
-            setError('Ошибка сети или сервер недоступен.');
+            if (axios.isAxiosError(error)) {
+                setError(error.response?.data?.message || 'Ошибка регистрации');
+            } else {
+                setError('Ошибка сети или сервер недоступен.');
+            }
         }
     };
 

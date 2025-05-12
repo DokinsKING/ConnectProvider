@@ -2,6 +2,7 @@ import { Hook } from "./Hook";
 import { FullServiceCardInfo } from "./pages/FullServiceCardInfo/FullServiceCardInfo";
 import { ServiceList } from "./pages/ServiceList/ServiceList";
 import { MainPage } from "./pages/MainPage/MainPage";
+import { FullApplicationInfo } from "./pages/FullApplicationInfo/FullApplicationInfo";
 import { Applications } from "./pages/Applications/Applications";
 import { Routes, Route } from 'react-router-dom';
 import { Login } from "./pages/Login/Login";
@@ -45,7 +46,10 @@ function App() {
           <Route index element={<ServiceList/>}/>
           <Route path=":id" element={<FullServiceCardInfo/>} />
         </Route>
-        <Route path="/applications" element={<Applications/>} />
+        <Route path="/applications">
+          <Route index element={<Applications/>}/>
+          <Route path=":id" element={<FullApplicationInfo/>} />
+        </Route>
       </Routes>
     </>
   );

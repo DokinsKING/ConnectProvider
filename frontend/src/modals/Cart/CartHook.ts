@@ -1,96 +1,97 @@
 import { useEffect } from 'react';
-import { Hook } from './../../Hook';  // Импортируем основной хук
+import { Hook } from './../../Hook';
+import axios from 'axios';
 
 export function CartHook(cartItems: any[], setCartItems: any) {
+    const { getAccessToken, navigate } = Hook();
 
-    const { getAccessToken, navigate} = Hook(); 
-    // Загрузка корзины из localStorage при монтировании компонента
+    // Загрузка корзины из localStorage
     useEffect(() => {
         const savedCart = localStorage.getItem('cart');
         if (savedCart) {
-            setCartItems(JSON.parse(savedCart)); // Загружаем сохраненную корзину из localStorage
+            setCartItems(JSON.parse(savedCart));
         }
     }, [setCartItems]);
 
-    // Функция для удаления товара из корзины
+    // Удаление товара из корзины
     const removeFromCart = (index: number) => {
-        const updatedCart = cartItems.filter((_, i) => i !== index); // Удаляем товар по индексу
-        setCartItems(updatedCart); // Обновляем корзину
-        // Сохраняем обновленную корзину в localStorage
+        const updatedCart = cartItems.filter((_, i) => i !== index);
+        setCartItems(updatedCart);
         localStorage.setItem('cart', JSON.stringify(updatedCart));
     };
 
-    // Функция для подтверждения создания заявки
+    // Подтверждение заявки
     const confirmApplication = async () => {
         try {
-            const token = await getAccessToken(); // Ждём получение токена
+            const token = await getAccessToken();
             if (!token) {
-                navigate("/login"); // Если токена нет, перенаправляем на логин
+                navigate("/login");
                 return;
             }
-    
-            // Если токен есть, создаём заявку
+
             const data = await createApplication(cartItems);
             
             if (data) {
-                setCartItems([]); // Очищаем корзину в состоянии
-                localStorage.removeItem('cart'); // И в localStorage
+                setCartItems([]);
+                localStorage.removeItem('cart');
             }
         } catch (error) {
             console.error("Ошибка при подтверждении заявки:", error);
-            // Можно добавить обработку ошибки (например, показать уведомление)
         }
     };
 
+    // Создание заявки и привязка услуг
     const createApplication = async (cartItems: { id: number }[]) => {
         try {
-            let token = await getAccessToken();  // Получаем актуальный токен
-
+            const token = await getAccessToken();
             if (!token) {
                 throw new Error("Token is null after refresh");
             }
 
-            // Декодируем JWT токен чтобы получить user_id
+            // Декодируем JWT токен
             const payload = JSON.parse(atob(token.split('.')[1]));
             const userId = payload.user_id;
 
-            // Создание заявки
-            const response = await fetch(`/api/applications/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify({
+            // Создаем заявку
+            const applicationResponse = await axios.post(
+                '/api/applications/',
+                {
                     status: 'draft',
                     created_at: new Date().toISOString(),
                     creator: userId,
-                }),
-            });
+                },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    }
+                }
+            );
 
-            const data = await response.json();
-            if (!response.ok) throw new Error("Failed to create application");
-
-            // Привязка услуг к заявке
+            // Привязываем услуги к заявке
             await Promise.all(
                 cartItems.map(item =>
-                    fetch(`http://127.0.0.1:8000/api/application-services/`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`,
-                        },
-                        body: JSON.stringify({
-                            application: data.id,
+                    axios.post(
+                        '/api/application-services/',
+                        {
+                            application: applicationResponse.data.id,
                             service: item.id,
-                        }),
-                    })
+                        },
+                        {
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                            }
+                        }
+                    )
                 )
             );
 
-            return data;
+            return applicationResponse.data;
         } catch (error) {
-            console.error('Ошибка:', error);
+            if (axios.isAxiosError(error)) {
+                console.error('Ошибка сервера:', error.response?.data);
+            } else {
+                console.error('Ошибка:', error);
+            }
             return null;
         }
     };

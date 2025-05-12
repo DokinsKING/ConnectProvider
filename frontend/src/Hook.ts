@@ -1,7 +1,14 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
+import { useDispatch } from 'react-redux';
+import { login_slice } from './redux/userSlice';
+
+import axios from 'axios';
+
 export function Hook() {
+    const dispatch = useDispatch();
+
     const usenavigate = useNavigate();
     const location = useLocation();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -10,7 +17,7 @@ export function Hook() {
     useEffect(() => {
         const token = localStorage.getItem('access_token');
         setIsLoggedIn(!!token);
-    }, [location.pathname]); // Добавляем зависимость от пути
+    }, [location.pathname]);
 
     const navigate = (pathname: string) => {
         if (pathname === "-1") {
@@ -28,40 +35,35 @@ export function Hook() {
     };
 
     const handleLogout = async () => {
-    try {
-        // Проверяем валидность текущего токена
-        const token = await getAccessToken();
-        
-        // Если токен есть (пользователь авторизован)
-        if (token) {
-            const refreshToken = localStorage.getItem('refresh_token');
+        try {
+            const token = await getAccessToken();
             
-            // Отправляем запрос на сервер для аннулирования токенов
-            await fetch('/api/logout/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ refresh_token: refreshToken })
-            });
+            if (token) {
+                const refreshToken = localStorage.getItem('refresh_token');
+                
+                await axios.post('/api/logout/', {
+                    refresh_token: refreshToken
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+            }
+            
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            dispatch(login_slice({ username: "" }));
+            setIsLoggedIn(false);
+            usenavigate('/login');
+            
+        } catch (error) {
+            console.error('Logout failed:', error);
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            setIsLoggedIn(false);
+            usenavigate('/login');
         }
-        
-        // В любом случае очищаем хранилище
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        setIsLoggedIn(false);
-        usenavigate('/login');
-        
-    } catch (error) {
-        console.error('Logout failed:', error);
-        // Даже если произошла ошибка, выполняем очистку
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        setIsLoggedIn(false);
-        usenavigate('/login');
-    }
-};
+    };
 
     const getAccessToken = async () => {
         let token = localStorage.getItem('access_token');
@@ -86,19 +88,14 @@ export function Hook() {
         if (!refreshToken) return null;
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/token/refresh/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ refresh: refreshToken })
+            const response = await axios.post('http://127.0.0.1:8000/api/token/refresh/', {
+                refresh: refreshToken
             });
 
-            const data = await response.json();
-            if (response.ok && data.access) {
-                localStorage.setItem('access_token', data.access);
+            if (response.data.access) {
+                localStorage.setItem('access_token', response.data.access);
                 setIsLoggedIn(true);
-                return data.access;
+                return response.data.access;
             } else {
                 localStorage.removeItem('access_token');
                 localStorage.removeItem('refresh_token');

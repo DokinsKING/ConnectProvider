@@ -9,7 +9,7 @@ export function FullServiceCardInfo() {
     const service = services.find(service => String(service.id) === String(id));
 
     if (!service) {
-        return <div>Сервис не найден</div>;
+        return;
     }
 
     return (

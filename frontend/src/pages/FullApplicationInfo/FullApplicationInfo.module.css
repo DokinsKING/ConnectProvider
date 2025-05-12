@@ -1,0 +1,287 @@
+/* Основной контейнер */
+.container {
+  padding: 2rem;
+  width: 800px;
+  background: #bda280;
+  border-radius: 15px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.pathway {
+  font-size: 30px;
+  font-family: 'Handjet', sans-serif;
+  letter-spacing: 4px;
+  text-align: left; /* Выровнять текст по левому краю */
+  width: 100%; /* Убедиться, что элемент занимает всю ширину контейнера */
+}
+
+
+/* Заголовок страницы */
+.title {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+
+/* Раздел с информацией о заявке */
+.statusSection {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.status {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  text-transform: uppercase;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.status.новый {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.status.обработан {
+  background-color: #FF9800;
+  color: white;
+}
+
+.status.закрыт {
+  background-color: #F44336;
+  color: white;
+}
+
+.detailsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  max-width: 1000px;
+  width: 100%;
+}
+
+.detailItem h3 {
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.detailItem p {
+  color: #555;
+  font-size: 1rem;
+  text-align: center;
+}
+
+/* Услуги */
+.servicesSection {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.servicesTitle {
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.servicesList {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 1.5rem;
+  justify-items: center;
+}
+
+.serviceCard {
+  background: #d8bc9b;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  max-width: 700px;
+}
+
+.serviceCard:hover {
+  transform: translateY(-5px);
+}
+
+.serviceName {
+  margin: 0 0 1rem 0;
+  color: #222;
+  font-size: 1.2rem;
+}
+
+.serviceImage {
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.serviceDescription {
+  color: #555;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.serviceMeta {
+  font-size: 0.9rem;
+  color: #777;
+}
+
+.emptyMessage {
+  color: #666;
+  font-style: italic;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Отступы и стили для блоков с пустыми данными */
+.notFound {
+  font-size: 1.5rem;
+  color: #F44336;
+  text-align: center;
+  padding: 3rem;
+}
+
+/* Стили для select статуса в режиме редактирования */
+.status.editInput {
+  padding: 0.6rem 1rem;
+  border: 2px solid #d8bc9b;
+  border-radius: 12px;
+  background-color: #f8f4ee;
+  color: #5a4a3a;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  appearance: none;
+  text-align: center;
+  min-width: 180px;
+}
+
+.status.editInput:focus {
+  outline: none;
+  border-color: #8a6d3b;
+  box-shadow: 0 0 0 3px rgba(138, 109, 59, 0.2);
+}
+
+/* Общие стили для input в режиме редактирования */
+.editInput {
+  padding: 0.6rem 0.8rem;
+  border: 2px solid #d8bc9b;
+  border-radius: 8px;
+  background-color: #f8f4ee;
+  color: #5a4a3a;
+  font-size: 1rem;
+  width: 100px;
+  max-width: 250px;
+  transition: all 0.3s ease;
+  margin-left: 127px;
+}
+
+.editInput:focus {
+  outline: none;
+  border-color: #8a6d3b;
+  box-shadow: 0 0 0 3px rgba(138, 109, 59, 0.2);
+}
+
+/* Специфические стили для datetime-local */
+.editInput[type="datetime-local"] {
+  padding: 0.5rem 0.8rem;
+  font-family: inherit;
+}
+
+.editInput {
+  padding: 0.6rem 0.8rem;
+  border: 2px solid #d8bc9b;
+  border-radius: 8px;
+  background-color: #f8f4ee;
+  color: #5a4a3a;
+  font-size: 1rem;
+  width: 100px;
+  max-width: 250px;
+  transition: all 0.3s ease;
+  margin-left: 127px;
+}
+
+/* Стили для кнопок редактирования */
+.editControls {
+  margin: 1.5rem 0;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.editButton, .saveButton, .cancelButton {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 120px;
+}
+
+.editButton {
+  background-color: #8a6d3b;
+  color: white;
+}
+
+.editButton:hover {
+  background-color: #6b4d1f;
+  transform: translateY(-2px);
+}
+
+.saveButton {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.saveButton:hover {
+  background-color: #3e8e41;
+  transform: translateY(-2px);
+}
+
+.cancelButton {
+  background-color: #f44336;
+  color: white;
+}
+
+.cancelButton:hover {
+  background-color: #d32f2f;
+  transform: translateY(-2px);
+}
+
+/* Адаптивность для кнопок */
+@media (max-width: 600px) {
+  .editControls {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .editButton, .saveButton, .cancelButton {
+    width: 100%;
+  }
+  
+  .editInput {
+    max-width: 100%;
+  }
+}
