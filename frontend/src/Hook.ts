@@ -17,7 +17,7 @@ export function Hook() {
     useEffect(() => {
         const token = localStorage.getItem('access_token');
         setIsLoggedIn(!!token);
-    }, [location.pathname]);
+    }, [location]);
 
     const navigate = (pathname: string) => {
         if (pathname === "-1") {

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Service, Application, ApplicationService
 from django.contrib.auth.models import User
+from rest_framework.exceptions import ValidationError
 
 # Сериализатор для услуги
 class ServiceSerializer(serializers.ModelSerializer):
@@ -46,6 +47,11 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
+        # Проверка уникальности username и email
+        if User.objects.filter(username=validated_data['username']).exists():
+            raise ValidationError("Username is already taken.")
+
+        # Создание пользователя
         user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],

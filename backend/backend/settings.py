@@ -128,6 +128,9 @@ REST_FRAMEWORK = {
         # Если вы хотите поддерживать браузерное отображение API, можно оставить:
         'rest_framework.renderers.BrowsableAPIRenderer',  # Для удобного отображения API в браузере
     ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',  # По умолчанию требует авторизации
+    ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],

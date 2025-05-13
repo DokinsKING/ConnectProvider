@@ -7,6 +7,7 @@ from .serializers import ServiceSerializer, ApplicationSerializer, ApplicationSe
 from django_filters import rest_framework as filters
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import IsAuthenticated,IsAdminUser
 
 
 # Фильтр для услуг
@@ -31,14 +32,11 @@ class ApplicationFilter(filters.FilterSet):
 
 class AdminCheckView(APIView):
     def get(self, request):
-        print(request.user)
         return Response({
             'is_admin': request.user.is_staff or request.user.is_superuser
         }, status=status.HTTP_200_OK)
 
 class ApplicationStatusList(APIView):
-    permission_classes = [AllowAny]
-
     def get(self, request):
         # Собираем все возможные статусы из ApplicationStatus
         statuses = [status[1] for status in ApplicationStatus.choices]
@@ -86,13 +84,12 @@ class ServiceDetail(APIView):
 # API View для работы с заявками
 class ApplicationList(APIView):
     filterset_class = ApplicationFilter  # Add the filterset class
-
     def get(self, request, *args, **kwargs):
         # Check if the user is a moderator
         if request.user.is_staff or request.user.is_superuser:
             applications = Application.objects.all()
         else:
-            applications = Application.objects.filter(creator=request.user)
+            applications = Application.objects.filter(creator=request.user.id)
         
         # Apply filters manually using the filterset class
         filterset = self.filterset_class(request.GET, queryset=applications)
@@ -103,7 +100,7 @@ class ApplicationList(APIView):
 
         serializer = ApplicationSerializer(filtered_applications, many=True)
         return Response(serializer.data)
-
+            
     def post(self, request, *args, **kwargs):
         # Автоматически устанавливаем создателя заявки
         request.data['creator'] = request.user.id
@@ -116,6 +113,12 @@ class ApplicationList(APIView):
     
 
 class ApplicationDetail(APIView):
+    def get_permissions(self):
+        permission_classes = [IsAdminUser]
+        if self.request.method == 'GET':
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
+    
     def get(self, request, pk, *args, **kwargs):
         try:
             application = Application.objects.get(pk=pk)
@@ -151,11 +154,18 @@ class ApplicationDetail(APIView):
 
 # API View для работы с заявками и услугами
 class ApplicationServicesList(APIView):
+    def get_permissions(self):
+        permission_classes = [IsAdminUser]
+        if self.request.method == 'POST':
+            # For POST requests, allow any authenticated user
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
+
+
     def get(self, request, *args, **kwargs):
-        if request.user.is_staff or request.user.is_superuser:
-            application_services = ApplicationService.objects.all()  # Note: removed try-except as all() never raises DoesNotExist
-            serializer = ApplicationServiceSerializer(application_services, many=True)  # Added many=True
-            return Response(serializer.data)
+        application_services = ApplicationService.objects.all()  # Note: removed try-except as all() never raises DoesNotExist
+        serializer = ApplicationServiceSerializer(application_services, many=True)  # Added many=True
+        return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):
         serializer = ApplicationServiceSerializer(data=request.data)
@@ -177,7 +187,7 @@ class ApplicationServicesList(APIView):
                 updated_instance.quantity = request.data['quantity']
                 updated_instance.save()
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"No access"}, status=status.HTTP_403_FORBIDDEN)
 
     def delete(self, request, pk, *args, **kwargs):
         try:
@@ -191,11 +201,11 @@ class ApplicationServicesList(APIView):
 
 # API View для работы с пользователями
 class UserList(APIView):
+    permission_classes = [IsAdminUser]
     def get(self, request, *args, **kwargs):
-        if request.user.is_staff or request.user.is_superuser:
-            users = User.objects.all()
-            serializer = UserSerializer(users, many=True)
-            return Response(serializer.data)
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
     def post(self, request, *args, **kwargs):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():

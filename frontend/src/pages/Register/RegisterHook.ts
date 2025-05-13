@@ -30,30 +30,36 @@ export function RegisterHook() {
                 }
             });
 
+
+            console.log("awapa: ",response);
+            
             return response;
         } catch (error) {
+            if (axios.isAxiosError(error))
+            {
+                if (
+                error.response?.data &&
+                typeof error.response.data === 'object' &&
+                'username' in error.response.data &&
+                Array.isArray(error.response.data.username) &&
+                error.response.data.username.length > 0
+                )
+                {setError(error.response.data.username[0]);}
+            }
+            
             console.error("Ошибка при регистрации", error);
             return false;
         }
     };
 
     const handleSubmit = async (username: string, email: string, password: string) => {
-        try {
-            const isRegistered = await register(username, email, password);
-            if (isRegistered) {
-                localStorage.setItem('access_token', isRegistered.data.access);
-                localStorage.setItem('refresh_token', isRegistered.data.refresh);
-                dispatch(login_slice({ username: username }));
-                navigate('/');
-            } else {
-                setError('Ошибка регистрации. Проверьте данные.');
-            }
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-                setError(error.response?.data?.message || 'Ошибка регистрации');
-            } else {
-                setError('Ошибка сети или сервер недоступен.');
-            }
+        const isRegistered = await register(username, email, password);
+        console.log(isRegistered);
+        if (isRegistered) {
+            localStorage.setItem('access_token', isRegistered.data.access);
+            localStorage.setItem('refresh_token', isRegistered.data.refresh);
+            dispatch(login_slice({ username: username }));
+            navigate('/');
         }
     };
 

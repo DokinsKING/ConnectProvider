@@ -82,49 +82,49 @@ export function FullApplicationInfoHook() {
     
     
     const handleSave = async () => {
-    try {
-      // Получаем токен и проверяем его
-      const token = await getAccessToken();
-      if (!token) {
-        throw new Error("Access token is missing");
-      }
-
-      // Декодируем токен, чтобы получить user_id
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const userId = payload.user_id;
-      if (!userId) {
-        throw new Error("User ID not found in token");
-      }
-
-      // Преобразуем даты в ISO-формат прямо в editedApplication
-      if (editedApplication.form_date) {
-        editedApplication.form_date = new Date(editedApplication.form_date).toISOString();
-      }
-      if (editedApplication.completion_date) {
-        editedApplication.completion_date = new Date(editedApplication.completion_date).toISOString();
-      }
-
-      // Отправляем PUT-запрос
-      const response = await axios.put(
-        `/api/applications/${application.id}/`,
-        editedApplication,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
+      try {
+        // Получаем токен и проверяем его
+        const token = await getAccessToken();
+        if (!token) {
+          throw new Error("Access token is missing");
         }
-      );
 
-      // Обновляем локальное состояние
-      setApplication(response.data);
-      setIsEditing(false);
-    } catch (error) {
-      console.error('Error while saving:', error);
-      // Показываем ошибку пользователю (например, через useState)
-      // setError(error.message);
-    }
-  };
+        // Декодируем токен, чтобы получить user_id
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const userId = payload.user_id;
+        if (!userId) {
+          throw new Error("User ID not found in token");
+        }
+
+        // Преобразуем даты в ISO-формат прямо в editedApplication
+        if (editedApplication.form_date) {
+          editedApplication.form_date = new Date(editedApplication.form_date).toISOString();
+        }
+        if (editedApplication.completion_date) {
+          editedApplication.completion_date = new Date(editedApplication.completion_date).toISOString();
+        }
+
+        // Отправляем PUT-запрос
+        const response = await axios.put(
+          `/api/applications/${application.id}/`,
+          editedApplication,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+          }
+        );
+
+        // Обновляем локальное состояние
+        setApplication(response.data);
+        setIsEditing(false);
+      } catch (error) {
+        console.error('Error while saving:', error);
+        // Показываем ошибку пользователю (например, через useState)
+        // setError(error.message);
+      }
+    };
     
     useEffect(() => {
       if(isLoading) return;
@@ -133,11 +133,11 @@ export function FullApplicationInfoHook() {
         setIsLoading(true);
         axios.get(`/api/users/${application.creator}`)
           .then((response) => {
-            setCreatorName(response.data.username); // Предполагается, что API возвращает объект с полем 'username'
+            setCreatorName(response.data.username);
           })
           .catch((error) => {
             console.error("Ошибка при получении имени автора:", error);
-            setCreatorName("Не удалось загрузить имя"); // Если произошла ошибка
+            setCreatorName("Не удалось загрузить имя");
           })
           .finally(() => setIsLoading(false));
       }
