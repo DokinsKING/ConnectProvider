@@ -34,18 +34,33 @@ export function ApplicationsListHook() {
       )?.[0] || englishStatus; // Если не найдено, возвращаем как есть
     };
 
+    const fetchStatuses = useCallback(async (token : string) => {
+        try {
+            const response = await axios.get('/api/application-statuses', {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            setStatuses(response.data);
+        } catch (error) {
+            console.error("Ошибка при получении статусов:", error);
+        }
+    }, []); // Здесь массив зависимостей пуст, так как функция не зависит от внешних данных
+
     useEffect(() => {
-        const fetchStatuses = async () => {
-            try {
-                const response = await axios.get('/api/application-statuses');
-                setStatuses(response.data);
-            } catch (error) {
-                console.error("Ошибка при получении статусов:", error);
+        const fetchData = async () => {
+            const token = await getAccessToken();
+            if (!token) {
+                throw new Error("Требуется авторизация");
             }
+
+            // Вызываем fetchStatuses, передавая токен
+            fetchStatuses(token);
         };
 
-        fetchStatuses();
-    }, []);
+        fetchData();
+    }, [fetchStatuses]);
 
     const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;

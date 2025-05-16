@@ -15,7 +15,6 @@ export function LoginHook() {
 
     const goToRegister = () => navigate('/register');
     const handleGoBack = () => navigate("-1");
-    const goToMain = () => navigate('/');
 
     const login = async (username: string, password: string) => {
         try {
@@ -55,6 +54,7 @@ export function LoginHook() {
                     const returnPath = new URL(referrer).pathname;
                     navigate(returnPath);
                 } else {
+                    console.log("Залогинился и success: ", success);
                     navigate('/');
                 }
             }
@@ -69,6 +69,5 @@ export function LoginHook() {
         handleSubmit,
         goToRegister,
         handleGoBack,
-        goToMain
     };
 }

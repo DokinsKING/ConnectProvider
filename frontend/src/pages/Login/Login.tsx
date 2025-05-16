@@ -5,7 +5,7 @@ import styles from './Login.module.css'; // Импортируем стили и
 export function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const { error, handleSubmit, goToRegister, handleGoBack, goToMain } = LoginHook(); // Используем хук
+    const { error, handleSubmit, goToRegister, handleGoBack } = LoginHook(); // Используем хук
 
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -37,7 +37,7 @@ export function Login() {
                     />
                 </div>
                 {error && <div className={styles.error}>{error}</div>}
-                <button className={styles.button} onClick={goToMain} type="submit">Войти</button>
+                <button className={styles.button} type="submit">Войти</button>
             </form>
 
             <div className={styles.register_link}>

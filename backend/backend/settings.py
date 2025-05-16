@@ -156,8 +156,8 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-DEFAULT_FILE_STORAGE = "minio.storage.storage.MinioMediaStorage"
-STATICFILES_STORAGE = "minio.storage.storage.MinioStaticStorage"
+DEFAULT_FILE_STORAGE = "minio_storage.storage.MinioMediaStorage"
+STATICFILES_STORAGE = "minio_storage.storage.MinioStaticStorage"
 
 MINIO_STORAGE_ENDPOINT = os.getenv('MINIO_STORAGE_ENDPOINT') or 'localhost:9000'
 MINIO_STORAGE_ACCESS_KEY = 'admin'
