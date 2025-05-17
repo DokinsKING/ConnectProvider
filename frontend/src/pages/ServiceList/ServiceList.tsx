@@ -28,6 +28,17 @@ export function ServiceList() {
               />
               <button type="submit">Поиск</button>
             </form>
+
+            {/* Иконка корзины отображается, если в корзине есть товары */}
+            {cartItems.length !== 0 && (
+                <img 
+                    className={styles.cart} 
+                    onClick={toggleCartVisibility} 
+                    src={CartIcon} 
+                    alt="Корзина" 
+                    title="Документы в корзине" 
+                />
+            )}
             
             {services.length > 0 ? (
                 services.map(service => (
@@ -44,17 +55,6 @@ export function ServiceList() {
                 <p className={styles.title}>Сервисы не найдены.</p>
             )}
 
-            {/* Иконка корзины отображается, если в корзине есть товары */}
-            {cartItems.length !== 0 && (
-                <img 
-                    className={styles.cart} 
-                    onClick={toggleCartVisibility} 
-                    src={CartIcon} 
-                    alt="Корзина" 
-                    title="Документы в корзине" 
-                />
-            )}
-            
 
             {/* Если корзина видимая, показываем содержимое корзины */}
             {isCartVisible && cartItems.length !== 0 && (

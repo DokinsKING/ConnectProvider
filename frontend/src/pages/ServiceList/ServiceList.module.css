@@ -1,9 +1,11 @@
 .container {
     display: flex;         
+    position: relative;
     flex-direction: column;
     gap: 15px;
     align-items: center;
-    margin-top: -5%;
+    width: 900px;
+    margin: 0 auto;
 }
 
 .title {
@@ -14,7 +16,6 @@
 }
 
 .search_field {
-    position: relative;
     margin-top: -2%;
 }
 
@@ -41,12 +42,13 @@
 
 .cart
 {
-    position: fixed;
-    width: 5%;
-    bottom: 40px;
-    left: 40px;
+    position: absolute;
+    width: 96px;
+    left: 890px;
+    top: 245px;
     cursor: pointer;
 }
+
 
 .cart:hover
 {

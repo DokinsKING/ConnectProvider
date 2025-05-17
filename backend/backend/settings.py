@@ -156,20 +156,17 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-DEFAULT_FILE_STORAGE = "minio_storage.storage.MinioMediaStorage"
-STATICFILES_STORAGE = "minio_storage.storage.MinioStaticStorage"
+# Использовать MinIO для хранения медиа файлов
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
-MINIO_STORAGE_ENDPOINT = os.getenv('MINIO_STORAGE_ENDPOINT') or 'localhost:9000'
-MINIO_STORAGE_ACCESS_KEY = 'admin'
-MINIO_STORAGE_SECRET_KEY = 'conprova'
-MINIO_STORAGE_MEDIA_BUCKET_NAME = 'images'
-MINIO_STORAGE_AUTO_CREATE_MEDIA_BUCKET = True
-MINIO_STORAGE_STATIC_BUCKET_NAME = 'static'
-MINIO_STORAGE_AUTO_CREATE_STATIC_BUCKET = True
-MINIO_STORAGE_USE_HTTPS = False
-
-MINIO_STORAGE_MEDIA_URL = f'{os.getenv("MINIO_CONTENT_ENDPOINT") or "localhost:9000"}/images'
-MINIO_STORAGE_STATIC_URL = f'{os.getenv("MINIO_CONTENT_ENDPOINT") or "localhost:9000"}/static'
+AWS_ACCESS_KEY_ID = 'admin'  # Например, 'minioadmin'
+AWS_SECRET_ACCESS_KEY = 'conprova'  # Например, 'minioadmin'
+AWS_STORAGE_BUCKET_NAME = 'images'
+AWS_S3_ENDPOINT_URL = 'http://localhost:9000'  # Например, 'http://localhost:9000'
+AWS_S3_USE_SSL = False  # Если не используете HTTPS
+AWS_S3_FILE_OVERWRITE = False  # Чтобы не перезаписывать файлы с одинаковыми именами
+AWS_DEFAULT_ACL = None  # Для MinIO обычно None
+AWS_QUERYSTRING_AUTH = True  # Для подписи URL
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 

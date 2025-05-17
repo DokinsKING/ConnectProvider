@@ -9,9 +9,9 @@ export function ServiceListHook() {
     const [isCartLoaded, setIsCartLoaded] = useState(false);
 
     // Функция для загрузки данных о сервисах
-    const fetchServices = useCallback(async (url: string) => {
+    const fetchServices = useCallback(async () => {
         try {
-            const response = await axios.get(url, {
+            const response = await axios.get(`/api/services?name=${searchQuery}`, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -23,7 +23,7 @@ export function ServiceListHook() {
     }, [searchQuery]);
 
     useEffect(() => {
-        fetchServices(`/api/services?name=${searchQuery}`);
+        fetchServices();
     }, [fetchServices]);
 
     // Функция для обработки клика по поиску

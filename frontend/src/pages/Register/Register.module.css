@@ -1,8 +1,4 @@
 .register_container {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
     width: 400px;
     min-height: 450px; /* Немного больше, чем у логина, из-за дополнительного поля */
     background: #e5c59db2;
@@ -13,6 +9,7 @@
     border-radius: 15px;
     font-family: 'Handjet', sans-serif;
     padding: 10px;
+    margin: 0 auto;
 }
 
 .register_container h2 {

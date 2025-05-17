@@ -30,9 +30,13 @@ export function FullApplicationInfoHook() {
         if (applications && id) {
             const foundApp = applications.find((app: any) => String(app.id) === String(id));
             if (foundApp) {
+              const englishStatus = Object.entries(statusMapping).find(
+                ([russian]) => russian === foundApp.status
+              )?.[1] || foundApp.status;
+
                 setApplication(foundApp);
                 setEditedApplication({
-                  status: foundApp.status,
+                  status: englishStatus,
                   form_date: foundApp.form_date,
                   completion_date: foundApp.completion_date,
                 });
@@ -127,33 +131,57 @@ export function FullApplicationInfoHook() {
     };
     
     useEffect(() => {
-      if(isLoading) return;
-      // Если заявка существует и у неё есть creator, запрашиваем имя
-      if (application && application.creator) {
-        setIsLoading(true);
-        axios.get(`/api/users/${application.creator}`)
-          .then((response) => {
-            setCreatorName(response.data.username);
-          })
-          .catch((error) => {
-            console.error("Ошибка при получении имени автора:", error);
-            setCreatorName("Не удалось загрузить имя");
-          })
-          .finally(() => setIsLoading(false));
-      }
-      if (application && application.moderator) {
-        setIsLoading(true);
-        axios.get(`/api/users/${application.moderator}`)
-          .then((response) => {
-            setModeratorName(response.data.username); // Предполагается, что API возвращает объект с полем 'username'
-          })
-          .catch((error) => {
-            console.error("Ошибка при получении имени автора:", error);
-            setCreatorName("Не удалось загрузить имя"); // Если произошла ошибка
-          })
-          .finally(() => setIsLoading(false));
-      }
-    }, [application]); // Хук будет срабатывать при изменении application   
+      if (isLoading) return;
+
+      const fetchData = async () => {
+        try {
+          const token = await getAccessToken();
+          if (!token) {
+            throw new Error("Access token is missing");
+          }
+
+          if (application && application.creator) {
+            setIsLoading(true);
+            try {
+              const response = await axios.get(`/api/users/${application.creator}`, {
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`,
+                },
+              });
+              setCreatorName(response.data.username);
+            } catch (error) {
+              console.error("Ошибка при получении имени автора:", error);
+              setCreatorName("Не удалось загрузить имя");
+            } finally {
+              setIsLoading(false);
+            }
+          }
+
+          if (application && application.moderator) {
+            setIsLoading(true);
+            try {
+              const response = await axios.get(`/api/users/${application.moderator}`, {
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`,
+                },
+              });
+              setModeratorName(response.data.username);
+            } catch (error) {
+              console.error("Ошибка при получении имени модератора:", error);
+              setModeratorName("Не удалось загрузить имя");
+            } finally {
+              setIsLoading(false);
+            }
+          }
+        } catch (err) {
+          console.error("Ошибка при получении токена или данных:", err);
+        }
+      };
+
+      fetchData();
+    }, [application]);
 
 
     return {

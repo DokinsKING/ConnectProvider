@@ -1,49 +1,19 @@
-import { Hook } from "./Hook";
-import { FullServiceCardInfo } from "./pages/FullServiceCardInfo/FullServiceCardInfo";
-import { ServiceList } from "./pages/ServiceList/ServiceList";
-import { MainPage } from "./pages/MainPage/MainPage";
-import { FullApplicationInfo } from "./pages/FullApplicationInfo/FullApplicationInfo";
-import { Applications } from "./pages/Applications/Applications";
 import { Routes, Route } from 'react-router-dom';
+
+import { Navbar } from "./components/Navbar/Navbar"
 import { Login } from "./pages/Login/Login";
 import { Register } from "./pages/Register/Register";
-import styles from "./App.module.css";
+import { MainPage } from "./pages/MainPage/MainPage";
+import { ServiceList } from "./pages/ServiceList/ServiceList";
+import { FullServiceCardInfo } from "./pages/FullServiceCardInfo/FullServiceCardInfo";
+import { Applications } from "./pages/Applications/Applications";
+import { FullApplicationInfo } from "./pages/FullApplicationInfo/FullApplicationInfo";
 
-import { type RootState } from './redux/store';  // Добавляем `type`
-import { useSelector } from 'react-redux';
 
 function App() {
-  const { navigate, isLoggedIn, handleLogout } = Hook();
-  const username = useSelector((state: RootState) => state.user.username);
-
   return (
     <>
-      <nav className={styles.navbar}>
-        <div className={styles.full_logo} onClick={() => navigate("/")}>
-          <span className={styles.logo}>IS-COM</span>
-          <span className={styles.under_logo}>ваш надежный <br />провайдер!</span>
-        </div>
-
-        <div className={styles.right_buttons_container}>
-          {isLoggedIn && (
-            <div className={styles.user_info_container}>
-              <span className={styles.username}>Username: {username}</span>
-              <button 
-                className={styles.logout_button}
-                onClick={handleLogout}
-              >
-                Выйти из аккаунта
-              </button>
-            </div>
-          )}
-          <button className={styles.right_buttons} onClick={() => navigate("/services")}>
-            Услуги
-          </button>
-          <button className={styles.right_buttons} onClick={() => navigate("/applications")}>
-            Заявки
-          </button>
-        </div>
-      </nav>
+      <Navbar/>
 
       <Routes>
         <Route path="/" element={<MainPage/>} />

@@ -1,10 +1,6 @@
 /* Login.module.css */
 
 .login_container {
-    position: absolute;  /* Позиционируем относительно окна */
-    top: 50%;            /* Сдвигаем на 50% от верхней границы родителя */
-    left: 50%;           /* Сдвигаем на 50% от левой границы родителя */
-    transform: translate(-50%, -50%); /* Центрируем элемент */
     width: 400px;        /* Устанавливаем разумную ширину для контейнера */
     min-height: 400px;   /* Минимальная высота контейнера */
     background: #e5c59db2;
@@ -15,6 +11,7 @@
     border-radius: 15px;
     font-family: 'Handjet', sans-serif;
     padding: 10px;
+    margin: 0 auto;
 }
 
 .login_container h2 {
