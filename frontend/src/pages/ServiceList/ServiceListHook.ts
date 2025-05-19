@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import axios from 'axios';
+import axiosClient from "./../../Clients"
 
 export function ServiceListHook() {
     const [services, setServices] = useState<any[]>([]);
@@ -11,11 +11,7 @@ export function ServiceListHook() {
     // Функция для загрузки данных о сервисах
     const fetchServices = useCallback(async () => {
         try {
-            const response = await axios.get(`/api/services?name=${searchQuery}`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
+            const response = await axiosClient.get(`/api/services?name=${searchQuery}`);
             setServices(response.data);
         } catch (error) {
             console.error("Ошибка при получении данных:", error);

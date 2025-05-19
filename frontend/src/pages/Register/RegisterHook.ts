@@ -2,13 +2,15 @@ import { useState } from 'react';
 
 import { useDispatch } from 'react-redux';
 import { login_slice } from './../../redux/userSlice';
+import { useNavigate } from 'react-router-dom';
 
-import { Hook } from './../../Hook';
-import axios from 'axios';
+
+import axiosClient from "./../../Clients"
+import { isAxiosError } from 'axios'; // Импортируем axios и тип AxiosError
 
 export function RegisterHook() {
-    const { navigate } = Hook();
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
     const dispatch = useDispatch();
 
 
@@ -20,14 +22,10 @@ export function RegisterHook() {
 
     const register = async (username: string, email: string, password: string) => {
         try {
-            const response = await axios.post('/api/register/', {
+            const response = await axiosClient.post('/api/register/', {
                 username,
                 email,
                 password
-            }, {
-                headers: {
-                    'Content-Type': 'application/json',
-                }
             });
 
 
@@ -35,7 +33,7 @@ export function RegisterHook() {
             
             return response;
         } catch (error) {
-            if (axios.isAxiosError(error))
+            if (isAxiosError(error))
             {
                 if (
                 error.response?.data &&

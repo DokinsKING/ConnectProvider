@@ -1,8 +1,8 @@
 import styles from "./ServiceCard.module.css";
-import { Hook } from './../../Hook';
+import { useNavigate } from "react-router-dom";
 
 export function ServiceCard({ id, name, description, image, addToCart} : { id : number, name : string, description : string, image : string, addToCart : any}) {
-    const { navigate } = Hook(); // Получаем navigate из основного хука
+    const navigate = useNavigate();
     return (
         <div className={styles.card}>
             <h2 className={styles.title}>{name}</h2>

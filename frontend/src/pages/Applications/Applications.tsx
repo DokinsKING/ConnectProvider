@@ -1,10 +1,11 @@
 import styles from './Applications.module.css';
 import { ApplicationsListHook } from './ApplicationsListHook';
-import { Hook } from './../../Hook';
+import { useNavigate } from 'react-router-dom';
+
 
 export function Applications() {
   const { applications, statuses, filters, handleFilterChange } = ApplicationsListHook();
-  const { navigate } = Hook();
+  const navigate = useNavigate();
 
   return (
     <div className={styles.container}>

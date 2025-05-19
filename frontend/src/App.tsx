@@ -1,4 +1,5 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
 import { Navbar } from "./components/Navbar/Navbar"
 import { Login } from "./pages/Login/Login";
@@ -11,6 +12,22 @@ import { FullApplicationInfo } from "./pages/FullApplicationInfo/FullApplication
 
 
 function App() {
+  const location = useLocation();
+
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    // Проверяем наличие токенов в localStorage
+    const accessToken = localStorage.getItem('access_token');
+    const refreshToken = localStorage.getItem('refresh_token');
+
+    if (accessToken && refreshToken) {
+      setIsAuthenticated(true);  // Если токены есть, считаем пользователя авторизованным
+    } else {
+      setIsAuthenticated(false);
+    }
+  }, [location.pathname]); // Этот useEffect сработает один раз при монтировании компонента
+
   return (
     <>
       <Navbar/>
@@ -23,9 +40,10 @@ function App() {
           <Route index element={<ServiceList/>}/>
           <Route path=":id" element={<FullServiceCardInfo/>} />
         </Route>
+
         <Route path="/applications">
-          <Route index element={<Applications/>}/>
-          <Route path=":id" element={<FullApplicationInfo/>} />
+          <Route index element={isAuthenticated ? <Applications /> : <Navigate to="/login" />}/>
+          <Route path=":id" element={isAuthenticated ? <FullApplicationInfo/> : <Navigate to="/login" />} />
         </Route>
       </Routes>
     </>

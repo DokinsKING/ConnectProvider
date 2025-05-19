@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
 import { useParams } from 'react-router-dom';
-import { Hook } from './../../Hook';
 import { ApplicationsListHook } from '../Applications/ApplicationsListHook';
-import axios from "axios";
+import axiosClient from "./../../Clients"
+
 
 export function FullApplicationInfoHook() {
     const { id } = useParams();
-    const { getAccessToken } = Hook()
     const { applications, statusMapping, getRussianStatus } = ApplicationsListHook();
 
 
@@ -47,19 +46,8 @@ export function FullApplicationInfoHook() {
     useEffect(() => {
     const checkAdminStatus = async () => {
         try {
-            // Получаем токен из localStorage/sessionStorage
-            const token = await getAccessToken();
-            
-            if (!token) {
-                setIsAdmin(false);
-                return;
-            }
 
-            const response = await axios.get('/api/check-admin/', {
-                headers: {
-                    'Authorization': `Bearer ${token}`  // Добавляем токен в заголовки
-                }
-            });
+            const response = await axiosClient.get('/api/check-admin/');
             
             setIsAdmin(response.data.is_admin);
         } catch (error) {
@@ -88,7 +76,7 @@ export function FullApplicationInfoHook() {
     const handleSave = async () => {
       try {
         // Получаем токен и проверяем его
-        const token = await getAccessToken();
+        const token = await localStorage.getItem('access_token');
         if (!token) {
           throw new Error("Access token is missing");
         }
@@ -109,16 +97,9 @@ export function FullApplicationInfoHook() {
         }
 
         // Отправляем PUT-запрос
-        const response = await axios.put(
+        const response = await axiosClient.put(
           `/api/applications/${application.id}/`,
-          editedApplication,
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
-            },
-          }
-        );
+          editedApplication);
 
         // Обновляем локальное состояние
         setApplication(response.data);
@@ -135,20 +116,10 @@ export function FullApplicationInfoHook() {
 
       const fetchData = async () => {
         try {
-          const token = await getAccessToken();
-          if (!token) {
-            throw new Error("Access token is missing");
-          }
-
           if (application && application.creator) {
             setIsLoading(true);
             try {
-              const response = await axios.get(`/api/users/${application.creator}`, {
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${token}`,
-                },
-              });
+              const response = await axiosClient.get(`/api/users/${application.creator}`);
               setCreatorName(response.data.username);
             } catch (error) {
               console.error("Ошибка при получении имени автора:", error);
@@ -161,12 +132,7 @@ export function FullApplicationInfoHook() {
           if (application && application.moderator) {
             setIsLoading(true);
             try {
-              const response = await axios.get(`/api/users/${application.moderator}`, {
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${token}`,
-                },
-              });
+              const response = await axiosClient.get(`/api/users/${application.moderator}`);
               setModeratorName(response.data.username);
             } catch (error) {
               console.error("Ошибка при получении имени модератора:", error);

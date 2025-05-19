@@ -49,12 +49,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'add_backend',
     'rest_framework',
-    'storages',
     'corsheaders',
     'django_filters',
     'rest_framework_simplejwt',
     'drf_spectacular',
     'rest_framework_simplejwt.token_blacklist',
+    'django_minio_backend',
 ]
 
 MIDDLEWARE = [
@@ -156,17 +156,26 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-# Использовать MinIO для хранения медиа файлов
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
-AWS_ACCESS_KEY_ID = 'admin'  # Например, 'minioadmin'
-AWS_SECRET_ACCESS_KEY = 'conprova'  # Например, 'minioadmin'
-AWS_STORAGE_BUCKET_NAME = 'images'
-AWS_S3_ENDPOINT_URL = 'http://localhost:9000'  # Например, 'http://localhost:9000'
-AWS_S3_USE_SSL = False  # Если не используете HTTPS
-AWS_S3_FILE_OVERWRITE = False  # Чтобы не перезаписывать файлы с одинаковыми именами
-AWS_DEFAULT_ACL = None  # Для MinIO обычно None
-AWS_QUERYSTRING_AUTH = True  # Для подписи URL
+DEFAULT_FILE_STORAGE = 'django_minio_backend.storage.MinioBackend'
+
+
+STORAGES = {  # -- ADDED IN Django 5.1
+    "default": {
+        "BACKEND": "django_minio_backend.models.MinioBackend",
+    },
+    "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+}
+
+MINIO_ENDPOINT = 'localhost:9000/'
+MINIO_ACCESS_KEY = 'admin'
+MINIO_SECRET_KEY = 'conprova'
+MINIO_BUCKET_CHECK_ON_SAVE = True
+MINIO_USE_HTTPS = False
+MINIO_PRIVATE_BUCKETS = [
+    'images'
+]
+
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
@@ -186,8 +195,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
-
-STATICFILES_DIRS = [BASE_DIR / "add_backend" / "static"]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

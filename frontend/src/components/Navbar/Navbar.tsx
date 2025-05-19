@@ -1,11 +1,14 @@
 import styles from "./Navbar.module.css";
 import { type RootState } from '../../redux/store';  // Добавляем `type`
 import { useSelector } from 'react-redux';
-import { Hook } from '../../Hook';
+import { useNavigate } from 'react-router-dom';
+import { NavbarHook } from './NavbarHook';
 
 export function Navbar() {
-    const { navigate, isLoggedIn, handleLogout } = Hook();
+    const { isLoggedIn, handleLogout } = NavbarHook();
+    const navigate = useNavigate();
     const username = useSelector((state: RootState) => state.user.username);
+
     return (
         <nav className={styles.navbar}>
         <div className={styles.full_logo} onClick={() => navigate("/")}>

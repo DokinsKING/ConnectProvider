@@ -2,11 +2,10 @@ import { useDispatch } from "react-redux"; // Импортируем хук дл
 import { setApplicationFilter } from "../../redux/filtersSlice";
 
 import { useState, useEffect, useCallback } from "react";
-import { Hook } from "../../Hook"; // Импортируем основной хук
-import axios from "axios";
+import { isAxiosError } from 'axios'; // Импортируем axios и тип AxiosError
+import axiosClient from "./../../Clients"
 
 export function ApplicationsListHook() {
-    const { getAccessToken } = Hook(); // Получаем метод для работы с токеном
     const dispatch = useDispatch();
 
     const [applications, setApplications] = useState<any[]>([]);
@@ -34,14 +33,9 @@ export function ApplicationsListHook() {
       )?.[0] || englishStatus; // Если не найдено, возвращаем как есть
     };
 
-    const fetchStatuses = useCallback(async (token : string) => {
+    const fetchStatuses = useCallback(async () => {
         try {
-            const response = await axios.get('/api/application-statuses', {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+            const response = await axiosClient.get('/api/application-statuses');
             setStatuses(response.data);
         } catch (error) {
             console.error("Ошибка при получении статусов:", error);
@@ -49,17 +43,9 @@ export function ApplicationsListHook() {
     }, []); // Здесь массив зависимостей пуст, так как функция не зависит от внешних данных
 
     useEffect(() => {
-        const fetchData = async () => {
-            const token = await getAccessToken();
-            if (!token) {
-                throw new Error("Требуется авторизация");
-            }
+        // Вызываем fetchStatuses, передавая токен
+        fetchStatuses();
 
-            // Вызываем fetchStatuses, передавая токен
-            fetchStatuses(token);
-        };
-
-        fetchData();
     }, [fetchStatuses]);
 
     const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -81,7 +67,7 @@ export function ApplicationsListHook() {
         setError(null);
         
         try {
-            const token = await getAccessToken();
+            const token = localStorage.getItem('access_token');;
             if (!token) throw new Error("Требуется авторизация");
 
             const queryParams = {
@@ -90,12 +76,7 @@ export function ApplicationsListHook() {
             };
             const query = new URLSearchParams(queryParams).toString();
             console.log(query);
-            const response = await axios.get(`/api/applications/?${query}`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+            const response = await axiosClient.get(`/api/applications/?${query}`);
 
             const dataWithTranslatedStatuses = response.data.map((app: any) => ({
                 ...app,
@@ -106,7 +87,7 @@ export function ApplicationsListHook() {
         } catch (error) {
             console.error("Ошибка при получении заявок:", error);
             setError(
-                axios.isAxiosError(error) 
+                isAxiosError(error) 
                     ? error.response?.data?.message || error.message 
                     : "Неизвестная ошибка"
             );

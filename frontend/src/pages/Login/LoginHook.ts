@@ -1,16 +1,17 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { login_slice } from './../../redux/userSlice';
 
 
-import { Hook } from './../../Hook';
-import axios from 'axios';
+import axiosClient from "./../../Clients"
+
+import { isAxiosError } from 'axios'; // Импортируем axios и тип AxiosError
 
 export function LoginHook() {
     const dispatch = useDispatch();
-    
+    const navigate = useNavigate();
 
-    const { navigate } = Hook();
     const [error, setError] = useState<string | null>(null);
 
     const goToRegister = () => navigate('/register');
@@ -18,20 +19,16 @@ export function LoginHook() {
 
     const login = async (username: string, password: string) => {
         try {
-            const response = await axios.post('/api/token/', {
+            const response = await axiosClient.post('/api/token/', {
                 username,
                 password
-            }, {
-                headers: {
-                    'Content-Type': 'application/json',
-                }
             });
 
             localStorage.setItem('access_token', response.data.access);
             localStorage.setItem('refresh_token', response.data.refresh);
             return true;
         } catch (error) {
-            if (axios.isAxiosError(error)) {
+            if (isAxiosError(error)) {
                 const errorMessage = error.response?.data?.detail || 'Ошибка авторизации';
                 setError(errorMessage);
                 console.error("Ошибка при авторизации", errorMessage);

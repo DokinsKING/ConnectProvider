@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django_minio_backend import MinioBackend
 
 # Статусы заявки
 class ApplicationStatus(models.TextChoices):
@@ -19,7 +20,8 @@ class Service(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
     price = models.IntegerField()
-    image = models.ImageField(upload_to='images/')
+    image = models.FileField(verbose_name="Object Upload",
+                            storage=MinioBackend(bucket_name='images'))
     status = models.CharField(max_length=10, choices=ServiceStatus.choices, default=ServiceStatus.ACTIVE)
     def soft_delete(self):
         self.status = ServiceStatus.DELETED

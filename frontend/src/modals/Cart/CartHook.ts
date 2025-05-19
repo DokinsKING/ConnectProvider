@@ -1,10 +1,8 @@
 import { useEffect } from 'react';
-import { Hook } from './../../Hook';
-import axios from 'axios';
+import { isAxiosError } from 'axios'; // Импортируем axios и тип AxiosError
+import axiosClient from "./../../Clients"
 
 export function CartHook(cartItems: any[], setCartItems: any) {
-    const { getAccessToken, navigate } = Hook();
-
     // Загрузка корзины из localStorage
     useEffect(() => {
         const savedCart = localStorage.getItem('cart');
@@ -23,12 +21,6 @@ export function CartHook(cartItems: any[], setCartItems: any) {
     // Подтверждение заявки
     const confirmApplication = async () => {
         try {
-            const token = await getAccessToken();
-            if (!token) {
-                navigate("/login");
-                return;
-            }
-
             const data = await createApplication(cartItems);
             
             if (data) {
@@ -43,7 +35,7 @@ export function CartHook(cartItems: any[], setCartItems: any) {
     // Создание заявки и привязка услуг
     const createApplication = async (cartItems: { id: number }[]) => {
         try {
-            const token = await getAccessToken();
+            const token = localStorage.getItem('access_token');
             if (!token) {
                 throw new Error("Token is null after refresh");
             }
@@ -53,33 +45,23 @@ export function CartHook(cartItems: any[], setCartItems: any) {
             const userId = payload.user_id;
 
             // Создаем заявку
-            const applicationResponse = await axios.post(
+            const applicationResponse = await axiosClient.post(
                 '/api/applications/',
                 {
                     status: 'draft',
                     created_at: new Date().toISOString(),
                     creator: userId,
-                },
-                {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    }
                 }
             );
 
             // Привязываем услуги к заявке
             await Promise.all(
                 cartItems.map(item =>
-                    axios.post(
+                    axiosClient.post(
                         '/api/application-services/',
                         {
                             application: applicationResponse.data.id,
                             service: item.id,
-                        },
-                        {
-                            headers: {
-                                'Authorization': `Bearer ${token}`,
-                            }
                         }
                     )
                 )
@@ -87,7 +69,7 @@ export function CartHook(cartItems: any[], setCartItems: any) {
 
             return applicationResponse.data;
         } catch (error) {
-            if (axios.isAxiosError(error)) {
+            if (isAxiosError(error)) {
                 console.error('Ошибка сервера:', error.response?.data);
             } else {
                 console.error('Ошибка:', error);

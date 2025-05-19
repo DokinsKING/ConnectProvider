@@ -1,9 +1,9 @@
 import styles from "./MainPage.module.css"; // Импортируем стили
 import mainGif from "./14SE.gif";
-import { Hook } from './../../Hook';
+import { useNavigate } from "react-router-dom";
 
 export function MainPage() {
-  const { navigate } = Hook(); // Получаем navigate из основного хука
+  const navigate = useNavigate();
   return (
     <div className={styles.container}>
       <img className={styles.main_img} src={mainGif} alt="main_gif" />
