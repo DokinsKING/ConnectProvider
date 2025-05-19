@@ -20,11 +20,14 @@ function App() {
     // Проверяем наличие токенов в localStorage
     const accessToken = localStorage.getItem('access_token');
     const refreshToken = localStorage.getItem('refresh_token');
-
+    console.log(location.pathname);
     if (accessToken && refreshToken) {
       setIsAuthenticated(true);  // Если токены есть, считаем пользователя авторизованным
     } else {
       setIsAuthenticated(false);
+      if (location.pathname !== "/login" && location.pathname !== "/register") {
+          localStorage.setItem('where_want', location.pathname);
+      }
     }
   }, [location.pathname]); // Этот useEffect сработает один раз при монтировании компонента
 
@@ -34,8 +37,8 @@ function App() {
 
       <Routes>
         <Route path="/" element={<MainPage/>} />
-        <Route path="/login" element={<Login/>} />
-        <Route path="/register" element={<Register/>} />
+        <Route path="/login" element={!isAuthenticated ? <Login/> : <Navigate to="/" />} />
+        <Route path="/register" element={!isAuthenticated ? <Register/> : <Navigate to="/" />} />
         <Route path="/services">
           <Route index element={<ServiceList/>}/>
           <Route path=":id" element={<FullServiceCardInfo/>} />

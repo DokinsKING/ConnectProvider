@@ -15,7 +15,7 @@ export function LoginHook() {
     const [error, setError] = useState<string | null>(null);
 
     const goToRegister = () => navigate('/register');
-    const handleGoBack = () => navigate("-1");
+    const handleGoBack = () => navigate(-1);
 
     const login = async (username: string, password: string) => {
         try {
@@ -44,15 +44,12 @@ export function LoginHook() {
         try {
             const success = await login(username, password);
             if (success) {
-                const referrer = document.referrer;
-                const currentOrigin = window.location.origin;
                 dispatch(login_slice({ username: username }));
-                if (referrer.startsWith(currentOrigin)) {
-                    const returnPath = new URL(referrer).pathname;
-                    navigate(returnPath);
+                const whereWant = localStorage.getItem('where_want');
+                if (whereWant) {
+                    navigate(whereWant);
                 } else {
-                    console.log("Залогинился и success: ", success);
-                    navigate('/');
+                    navigate('/'); // Переход на главную страницу или любой другой дефолтный путь
                 }
             }
         } catch (error) {

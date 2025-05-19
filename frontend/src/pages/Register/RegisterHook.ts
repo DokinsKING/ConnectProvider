@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { useDispatch } from 'react-redux';
 import { login_slice } from './../../redux/userSlice';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 
 import axiosClient from "./../../Clients"
@@ -11,13 +11,15 @@ import { isAxiosError } from 'axios'; // Импортируем axios и тип 
 export function RegisterHook() {
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
+    const location = useLocation();
     const dispatch = useDispatch();
 
 
     const goToLogin = () => navigate('/login');
 
     const handleGoBack = () => {
-        navigate("-1");
+        const previousPath = location.state?.from || '/';  // Если нет состояния, то перенаправляем на главную
+        navigate(previousPath);
     };
 
     const register = async (username: string, email: string, password: string) => {
