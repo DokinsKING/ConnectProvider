@@ -1,7 +1,6 @@
-import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { Routes, Route} from 'react-router-dom';
 
-import { Navbar } from "./components/Navbar/Navbar"
+import { Navbar } from "./components/Navbar/Navbar";
 import { Login } from "./pages/Login/Login";
 import { Register } from "./pages/Register/Register";
 import { MainPage } from "./pages/MainPage/MainPage";
@@ -9,44 +8,50 @@ import { ServiceList } from "./pages/ServiceList/ServiceList";
 import { FullServiceCardInfo } from "./pages/FullServiceCardInfo/FullServiceCardInfo";
 import { Applications } from "./pages/Applications/Applications";
 import { FullApplicationInfo } from "./pages/FullApplicationInfo/FullApplicationInfo";
-
+import { ProtectedRoute } from './ProtectedRoute'; // Импортируем наш компонент
 
 function App() {
-  const location = useLocation();
-
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    // Проверяем наличие токенов в localStorage
-    const accessToken = localStorage.getItem('access_token');
-    const refreshToken = localStorage.getItem('refresh_token');
-    console.log(location.pathname);
-    if (accessToken && refreshToken) {
-      setIsAuthenticated(true);  // Если токены есть, считаем пользователя авторизованным
-    } else {
-      setIsAuthenticated(false);
-      if (location.pathname !== "/login" && location.pathname !== "/register") {
-          localStorage.setItem('where_want', location.pathname);
-      }
-    }
-  }, [location.pathname]); // Этот useEffect сработает один раз при монтировании компонента
-
   return (
     <>
-      <Navbar/>
-
+      <Navbar />
       <Routes>
-        <Route path="/" element={<MainPage/>} />
-        <Route path="/login" element={!isAuthenticated ? <Login/> : <Navigate to="/" />} />
-        <Route path="/register" element={!isAuthenticated ? <Register/> : <Navigate to="/" />} />
+        <Route path="/" element={<MainPage />} />
+        
+        {/* Используем ProtectedRoute для логина и регистрации */}
+        <Route path="/login" element={
+          <ProtectedRoute inverse>
+            <Login />
+          </ProtectedRoute>
+        } />
+        <Route path="/register" element={
+          <ProtectedRoute inverse>
+            <Register />
+          </ProtectedRoute>
+        } />
+
         <Route path="/services">
-          <Route index element={<ServiceList/>}/>
-          <Route path=":id" element={<FullServiceCardInfo/>} />
+          <Route index element={<ServiceList />} />
+          <Route path=":id" element={<FullServiceCardInfo />} />
         </Route>
 
+        {/* Защищённые маршруты для заявок */}
         <Route path="/applications">
-          <Route index element={isAuthenticated ? <Applications /> : <Navigate to="/login" />}/>
-          <Route path=":id" element={isAuthenticated ? <FullApplicationInfo/> : <Navigate to="/login" />} />
+          <Route 
+            index 
+            element={
+              <ProtectedRoute>
+                <Applications />
+              </ProtectedRoute>
+            }
+          />
+          <Route 
+            path=":id" 
+            element={
+              <ProtectedRoute>
+                <FullApplicationInfo />
+              </ProtectedRoute>
+            }
+          />
         </Route>
       </Routes>
     </>

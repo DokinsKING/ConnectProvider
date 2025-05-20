@@ -15,6 +15,7 @@ export function FullApplicationInfoHook() {
     const [isAdmin, setIsAdmin] = useState<boolean>(false);
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [application, setApplication] = useState<any>({});
+    const [applicationServices, setApplicationServices] = useState<any[]>([]);
     const [editedApplication, setEditedApplication] = useState<{
       status: string;
       form_date: string;
@@ -42,6 +43,30 @@ export function FullApplicationInfoHook() {
             }
         }
     }, [applications, id]);
+
+    useEffect(() => {
+      const fetchApplicationServices = async () => {
+        if (application.id && application.application_services?.length > 0) {
+          try {
+            // Извлекаем все ID услуг из application_services
+            const serviceIds = application.application_services.map((service: any) => service.service);
+            // Выполняем запросы для всех ID услуг
+            const serviceRequests = serviceIds.map((serviceId: number) =>
+              axiosClient.get(`/api/services/${serviceId}/`)
+            );
+            // Ожидаем выполнения всех запросов
+            const responses = await Promise.all(serviceRequests);
+            // Собираем все данные о сервисах в массив
+            const servicesData = responses.map((response: any) => response.data);
+            setApplicationServices(servicesData); // Присваиваем данные о услугах в состояние
+          } catch (error) {
+            console.error("Ошибка при загрузке услуг:", error);
+          }
+        }
+      };
+
+      fetchApplicationServices();
+    }, [application]);
 
     useEffect(() => {
     const checkAdminStatus = async () => {
@@ -156,6 +181,7 @@ export function FullApplicationInfoHook() {
       isAdmin,
       isEditing,
       editedApplication,
+      applicationServices,
       application,
       statusMapping,
       getRussianStatus,

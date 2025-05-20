@@ -59,7 +59,8 @@ export function RegisterHook() {
             localStorage.setItem('access_token', isRegistered.data.access);
             localStorage.setItem('refresh_token', isRegistered.data.refresh);
             dispatch(login_slice({ username: username }));
-            navigate('/');
+            const from = location.state?.from?.pathname || '/';
+            navigate(from); // Переход на главную страницу или любой другой дефолтный путь
         }
     };
 

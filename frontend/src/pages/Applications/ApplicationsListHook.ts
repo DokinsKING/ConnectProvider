@@ -75,7 +75,6 @@ export function ApplicationsListHook() {
               status: filters.status ? statusMapping[filters.status] || filters.status : ''
             };
             const query = new URLSearchParams(queryParams).toString();
-            console.log(query);
             const response = await axiosClient.get(`/api/applications/?${query}`);
 
             const dataWithTranslatedStatuses = response.data.map((app: any) => ({

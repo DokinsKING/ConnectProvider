@@ -15,17 +15,25 @@ const isTokenExpired = (token: string) => {
 
 // Функция для получения нового токена (если токен истек)
 const refreshAccessToken = async () => {
-    try {
-        // Выполняем запрос на обновление токена через axiosClient
-        const response = await axios.post('/api/refresh-token', { /* данные для обновления токена */ });
-        const newToken = response.data.access_token;  // Предположим, что сервер возвращает новый токен
-        localStorage.setItem('access_token', newToken);
-        
-        return newToken;
-    } catch (error) {
-        console.error('Failed to refresh access token:', error);
-        throw error;  // Если обновление токена не удалось, выбрасываем ошибку
+  try {
+    const refreshToken = localStorage.getItem('refresh_token');
+    if (!refreshToken) {
+      throw new Error('Refresh token not found');
     }
+
+    console.log(refreshToken)
+    const response = await axios.post('/api/token/refresh/', {
+      refresh: refreshToken,
+    });
+
+    const newAccessToken = response.data.access_token;
+    localStorage.setItem('access_token', newAccessToken);
+
+    return newAccessToken;
+  } catch (error) {
+    console.error('Failed to refresh access token:', error);
+    throw error;
+  }
 };
 
 // Создаем клиент axios с нужными заголовками
@@ -39,7 +47,6 @@ const axiosClient = axios.create({
 axiosClient.interceptors.request.use(
   async (config) => {
     let token = localStorage.getItem('access_token');  // Берем токен из localStorage
-
     if (token && isTokenExpired(token)) {
       if (!isRefreshing) {
         // Если токен истек и мы еще не обновляем его, запускаем процесс обновления
@@ -56,7 +63,6 @@ axiosClient.interceptors.request.use(
       // Добавляем токен в заголовок Authorization
       config.headers['Authorization'] = `Bearer ${token}`;
     }
-
     return config;  // Возвращаем измененный конфиг
   },
   (error) => {

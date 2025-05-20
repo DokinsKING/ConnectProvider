@@ -1,14 +1,18 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Service, Application, ApplicationService,ApplicationStatus
+from .models import Service, Application, ApplicationService,ApplicationStatus, ServiceStatus
 from django.contrib.auth.models import User
 from .serializers import ServiceSerializer, ApplicationSerializer, ApplicationServiceSerializer, UserSerializer
 from django_filters import rest_framework as filters
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated,IsAdminUser
+from rest_framework_simplejwt.views import TokenRefreshView
 
+
+class PublicTokenRefreshView(TokenRefreshView):
+    permission_classes = [AllowAny]
 
 # Фильтр для услуг
 class ServiceFilter(filters.FilterSet):
@@ -49,7 +53,7 @@ class ServiceList(APIView):
     filterset_class = ServiceFilter
 
     def get(self, request, *args, **kwargs):
-        services = Service.objects.all()
+        services = Service.objects.filter(status=ServiceStatus.ACTIVE)
         
         # Применяем фильтрацию вручную
         filterset = self.filterset_class(request.GET, queryset=services)
@@ -87,9 +91,10 @@ class ApplicationList(APIView):
     def get(self, request, *args, **kwargs):
         # Check if the user is a moderator
         if request.user.is_staff or request.user.is_superuser:
-            applications = Application.objects.all()
+            applications = Application.objects.exclude(status__in=[ApplicationStatus.DELETED, ApplicationStatus.COMPLETED, ApplicationStatus.REJECTED])  # Фильтруем заявки с статусами "deleted", "completed", "rejected"
         else:
-            applications = Application.objects.filter(creator=request.user.id)
+            applications = Application.objects.filter(creator=request.user.id).exclude(status__in=[ApplicationStatus.DELETED, ApplicationStatus.COMPLETED, ApplicationStatus.REJECTED])
+
         
         # Apply filters manually using the filterset class
         filterset = self.filterset_class(request.GET, queryset=applications)
@@ -241,8 +246,8 @@ class RegisterUserView(APIView):
 class LogoutView(APIView):
     def post(self, request):
         try:
-            refresh_token = request.data["refresh_token"]
-            token = RefreshToken(refresh_token)
+            refresh = request.data["refresh_token"]
+            token = RefreshToken(refresh)
             token.blacklist()  # Добавляем refresh токен в черный список
             return Response(status=status.HTTP_205_RESET_CONTENT)
         except Exception as e:

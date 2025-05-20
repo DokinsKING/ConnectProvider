@@ -1,15 +1,12 @@
 import { useLocation } from 'react-router-dom';
 
-import { ServiceListHook } from './../ServiceList/ServiceListHook';
 import { FullApplicationInfoHook } from './FullApplicationInfoHook';
 import styles from './FullApplicationInfo.module.css';
 
 export function FullApplicationInfo() {
   const location = useLocation();
 
-  const { services } = ServiceListHook();
-
-  const { creatorName, moderatorName, isAdmin, isEditing, editedApplication, application, statusMapping, getRussianStatus, handleInputChange, handleSave, setIsEditing} = FullApplicationInfoHook();
+  const { creatorName, moderatorName, isAdmin, isEditing, editedApplication, application, applicationServices, statusMapping, getRussianStatus, handleInputChange, handleSave, setIsEditing} = FullApplicationInfoHook();
 
   if (!application) {
     return;
@@ -111,23 +108,24 @@ export function FullApplicationInfo() {
       )}
 
       <div className={styles.servicesSection}>
-        <h3 className={styles.servicesTitle}>Услуги</h3>
-        {services.length > 0 ? (
-          <div>
-            <ul className={styles.servicesList}>
-              {services.map((item, index) => (
-                <li key={index} className={styles.serviceCard}>
-                  <h2 className={styles.serviceName}>{item.name}</h2>
-                  <img className={styles.serviceImage} src={item.image} alt={item.name} />
-                  <p className={styles.serviceDescription}>{item.description}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : (
-          <p>Корзина пуста.</p>
-        )}
-      </div>
+  <h3 className={styles.servicesTitle}>Услуги</h3>
+  {applicationServices.length > 0 ? (
+    <div>
+      <ul className={styles.servicesList}>
+        {applicationServices.map((item:any, index:any,) => (
+          <li key={index} className={styles.serviceCard}>
+            <h2 className={styles.serviceName}>{item.name}</h2>
+            <img className={styles.serviceImage} src={item.image} alt={item.name} />
+            <p className={styles.serviceDescription}>{item.description}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  ) : (
+    <p>Корзина пуста.</p>
+  )}
+</div>
+
     </div>
   );
 }

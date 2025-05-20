@@ -9,7 +9,7 @@ import axiosClient from "../../Clients"
 export function NavbarHook() {
     const dispatch = useDispatch();
     const location = useLocation();
-    const usenavigate = useNavigate();
+    const navigate = useNavigate();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     // Проверка авторизации при загрузке и изменении токена
@@ -26,7 +26,7 @@ export function NavbarHook() {
                 const refreshToken = localStorage.getItem('refresh_token');
                 
                 await axiosClient.post('/api/logout/', {
-                    refresh_token: refreshToken
+                    refresh: refreshToken
                 });
             }
             
@@ -34,14 +34,14 @@ export function NavbarHook() {
             localStorage.removeItem('refresh_token');
             dispatch(login_slice({ username: "" }));
             setIsLoggedIn(false);
-            usenavigate('/login');
+            navigate('/login');
             
         } catch (error) {
             console.error('Logout failed:', error);
             localStorage.removeItem('access_token');
             localStorage.removeItem('refresh_token');
             setIsLoggedIn(false);
-            usenavigate('/login');
+            navigate('/login');
         }
     };
 

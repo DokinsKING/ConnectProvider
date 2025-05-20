@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { login_slice } from './../../redux/userSlice';
 
 
@@ -11,6 +11,7 @@ import { isAxiosError } from 'axios'; // Импортируем axios и тип 
 export function LoginHook() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
 
     const [error, setError] = useState<string | null>(null);
 
@@ -45,12 +46,9 @@ export function LoginHook() {
             const success = await login(username, password);
             if (success) {
                 dispatch(login_slice({ username: username }));
-                const whereWant = localStorage.getItem('where_want');
-                if (whereWant) {
-                    navigate(whereWant);
-                } else {
-                    navigate('/'); // Переход на главную страницу или любой другой дефолтный путь
-                }
+                const from = location.state?.from?.pathname || '/';
+                navigate(from); // Переход на главную страницу или любой другой дефолтный путь
+
             }
         } catch (error) {
             setError('Ошибка сети или сервер недоступен.');
