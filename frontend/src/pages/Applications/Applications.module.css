@@ -19,6 +19,46 @@
     border: 1px solid black;
 }
 
+.filtersContainer {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Общий стиль для всех input и select */
+.filtersContainer input,
+.filtersContainer select {
+  padding: 0.6rem 1rem;
+  font-size: 1rem;
+  border: 2px solid #d8bc9b;
+  border-radius: 8px;
+  background-color: #f8f4ee;
+  color: #5a4a3a;
+  transition: all 0.3s ease;
+  width: 200px;
+  max-width: 300px;
+}
+
+/* Стиль для input с типом date */
+.filtersContainer input[type="date"] {
+  cursor: pointer;
+}
+
+/* Стиль для select */
+.filtersContainer select {
+  cursor: pointer;
+}
+
+/* Фокусировка на input и select */
+.filtersContainer input:focus,
+.filtersContainer select:focus {
+  outline: none;
+  border-color: #8a6d3b;
+  box-shadow: 0 0 0 3px rgba(138, 109, 59, 0.2);
+}
+
 .row:hover
 {
     cursor: pointer;

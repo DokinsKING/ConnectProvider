@@ -1,18 +1,13 @@
 .card {
-    width: 50%;
-    height: 10%;
-    background: #dbb98d;
+    width: 900px;
+    background: #D8C0A0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     border-radius: 50px;
-    top: -40px;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    top: -80px;
     margin: auto;
-    position: relative; /* Добавляем относительное позиционирование */
+
 }
 
 .title {
@@ -26,16 +21,16 @@
 .image {
     width: 70%;
     height: 70%;
-    border-radius: 15px;
+    border-radius: 10px;
     display: block;
 }
 
 .description {
     font-family: 'Handjet', sans-serif;
     font-size: 24px;
-    text-align: center;
+    text-align: justify;
     margin-top: 20px;
-    max-width: 416px;
+    max-width: 650px;
     color: black;
 }
 
@@ -43,7 +38,7 @@
     font-size: 25px;
     font-family: 'Handjet', sans-serif;
     letter-spacing: 4px;
-    position: absolute; /* Используем абсолютное позиционирование */
-    left: 20px; /* Расстояние от левого края */
-    top: -10px; /* Позиция сверху, можно настроить */
+    justify-self: start;
+    margin-left: -700px;
+    margin-bottom: -20px;
 }

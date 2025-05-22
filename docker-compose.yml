@@ -25,6 +25,12 @@ services:
     volumes:
       - minio_data:/data  # Данные MinIO будут храниться в volume
     command: server /data --console-address ":9001"
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+
 
 volumes:
   minio_data:

@@ -50,7 +50,7 @@
   padding: 10px 20px;
   font-size: 14px;
   font-weight: bold;
-  background-color: #ffffff;
+  background-color: #cca26f;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -58,13 +58,11 @@
 }
 
 .buttons button:hover {
-  background-color: #cccccc;
+  filter: brightness(1.1);
   transform: translateY(-2px);
 }
 
 .buttons button:active {
-  background-color: #afafaf;
+  filter: brightness(1.3);
   transform: translateY(0);
 }
-
-

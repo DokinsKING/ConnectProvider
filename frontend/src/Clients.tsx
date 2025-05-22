@@ -25,8 +25,7 @@ const refreshAccessToken = async () => {
     const response = await axios.post('/api/token/refresh/', {
       refresh: refreshToken,
     });
-
-    const newAccessToken = response.data.access_token;
+    const newAccessToken = response.data.access;
     localStorage.setItem('access_token', newAccessToken);
 
     return newAccessToken;

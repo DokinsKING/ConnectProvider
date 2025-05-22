@@ -11,7 +11,7 @@ export function Applications() {
     <div className={styles.container}>
       <h2 className={styles.title}>Заявки</h2>
 
-      <div>
+      <div className={styles.filtersContainer}>
         <input
           type="date"
           name="start_date"
