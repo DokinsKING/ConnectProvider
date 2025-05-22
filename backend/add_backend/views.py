@@ -9,6 +9,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated,IsAdminUser
 from rest_framework_simplejwt.views import TokenRefreshView
+from django.core.cache import cache
+import json
 
 
 class PublicTokenRefreshView(TokenRefreshView):
@@ -53,6 +55,13 @@ class ServiceList(APIView):
     filterset_class = ServiceFilter
 
     def get(self, request, *args, **kwargs):
+        params = request.GET.urlencode()  # преобразуем параметры в строку вида "name=test&category=1"
+        cache_key = f"service_{params}"
+        cached_json = cache.get(cache_key)
+        if(cached_json):
+            data = json.loads(cached_json)
+            return Response(data)
+
         services = Service.objects.filter(status=ServiceStatus.ACTIVE)
         
         # Применяем фильтрацию вручную
@@ -64,6 +73,7 @@ class ServiceList(APIView):
 
         # Передаем контекст запроса в сериализатор
         serializer = ServiceSerializer(filtered_services, many=True, context={'request': request})
+        cache.set(cache_key, json.dumps(serializer.data))
         return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):
@@ -76,21 +86,36 @@ class ServiceList(APIView):
 class ServiceDetail(APIView):
     permission_classes = [AllowAny] 
     def get(self, request, pk, *args, **kwargs):
+        cache_key = f"service_detail_{pk}"
+        cached_json = cache.get(cache_key)
+        
+        # Если данные есть в кэше - возвращаем их
+        if cached_json:
+            return Response(json.loads(cached_json), status=status.HTTP_200_OK)
+        
         try:
             service = Service.objects.get(pk=pk)
         except Service.DoesNotExist:
             return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
 
-        # Передаем контекст запроса в сериализатор
+        # Сериализация и сохранение в кэш
         serializer = ServiceSerializer(service, context={'request': request})
-        return Response(serializer.data)
+        cache.set(cache_key, json.dumps(serializer.data))  # 15 минут
+        
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 # API View для работы с заявками
 class ApplicationList(APIView):
     filterset_class = ApplicationFilter  # Add the filterset class
     def get(self, request, *args, **kwargs):
+        staff = request.user.is_staff or request.user.is_superuser
         # Check if the user is a moderator
-        if request.user.is_staff or request.user.is_superuser:
+        if staff:
+            params = request.GET.urlencode()
+            cache_key = f"applications_staff_{params}"
+            cached_json = cache.get(cache_key)
+            if cached_json:
+                return Response(json.loads(cached_json))
             applications = Application.objects.exclude(status__in=[ApplicationStatus.DELETED, ApplicationStatus.COMPLETED, ApplicationStatus.REJECTED])  # Фильтруем заявки с статусами "deleted", "completed", "rejected"
         else:
             applications = Application.objects.filter(creator=request.user.id).exclude(status__in=[ApplicationStatus.DELETED, ApplicationStatus.COMPLETED, ApplicationStatus.REJECTED])
@@ -104,6 +129,11 @@ class ApplicationList(APIView):
             return Response({"detail": "Invalid filter parameters."}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = ApplicationSerializer(filtered_applications, many=True)
+        if staff:
+            params = request.GET.urlencode()
+            cache_key = f"applications_staff_{params}"
+            cache.set(cache_key, json.dumps(serializer.data)) 
+
         return Response(serializer.data)
             
     def post(self, request, *args, **kwargs):

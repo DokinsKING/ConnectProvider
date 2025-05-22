@@ -27,7 +27,7 @@ services:
     command: server /data --console-address ":9001"
   redis:
     image: redis:alpine
-    container_name: redis
+    container_name: ConnectProvider-REDIScontainer
     ports:
       - "6379:6379"
 
