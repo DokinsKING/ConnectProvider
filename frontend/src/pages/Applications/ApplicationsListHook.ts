@@ -1,6 +1,7 @@
 import { useDispatch } from "react-redux"; // Импортируем хук для доступа к Redux
 import { setApplicationFilter } from "../../redux/filtersSlice";
 
+import { statusTranslate } from "../../assets/utils/statusTranslate";
 import { useState, useEffect, useCallback } from "react";
 import { isAxiosError } from 'axios'; // Импортируем axios и тип AxiosError
 import axiosClient from "./../../Clients"
@@ -8,6 +9,7 @@ import axiosClient from "./../../Clients"
 export function ApplicationsListHook() {
     const dispatch = useDispatch();
 
+    const { getStatus } = statusTranslate();
     const [applications, setApplications] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -17,21 +19,6 @@ export function ApplicationsListHook() {
         end_date: '',
         status: '',
     });
-
-    const statusMapping: { [key: string]: string } = {
-      "Черновик": "draft",
-      "Удалён": "deleted",
-      "Сформирован": "formatted",
-      "Завершён": "completed",
-      "Отклонён": "rejected"
-    };
-    
-    // Функция для обратного преобразования (английский → русский)
-    const getRussianStatus = (englishStatus: string) => {
-      return Object.entries(statusMapping).find(
-        ([russian, english]) => english === englishStatus
-      )?.[0] || englishStatus; // Если не найдено, возвращаем как есть
-    };
 
     const fetchStatuses = useCallback(async () => {
         try {
@@ -72,14 +59,14 @@ export function ApplicationsListHook() {
 
             const queryParams = {
               ...filters,
-              status: filters.status ? statusMapping[filters.status] || filters.status : ''
+              status: filters.status ? getStatus(filters.status) || filters.status : ''
             };
             const query = new URLSearchParams(queryParams).toString();
             const response = await axiosClient.get(`/api/applications/?${query}`);
 
             const dataWithTranslatedStatuses = response.data.map((app: any) => ({
                 ...app,
-                status: getRussianStatus(app.status) // Преобразуем здесь
+                status: getStatus(app.status) // Преобразуем здесь
             }));
         
             setApplications(dataWithTranslatedStatuses);
@@ -107,8 +94,7 @@ export function ApplicationsListHook() {
         statuses,
         filters,
         error,
-        statusMapping,
-        getRussianStatus,
+        getStatus,
         handleFilterChange,
         refreshApplications: fetchApplications
     };

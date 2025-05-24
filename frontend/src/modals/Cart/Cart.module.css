@@ -76,6 +76,8 @@
     margin-left: 245px;
     gap: 5px;
     margin-top: -2.5%;
+    margin-bottom: 0;
+    margin-top: auto; /* Прижимаем к низу */
 }
 
 .cartItem h4 {
@@ -102,7 +104,7 @@
     cursor: pointer;
     transition: background-color 0.3s ease;
     font-size: 16px;
-    margin-top: 10px;
+    margin-bottom: 20px;
 }
 
 .removeButton:hover {

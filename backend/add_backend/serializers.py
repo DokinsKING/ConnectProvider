@@ -2,17 +2,41 @@ from rest_framework import serializers
 from .models import Service, Application, ApplicationService
 from django.contrib.auth.models import User
 from rest_framework.exceptions import ValidationError
+from django.core.files.base import ContentFile
+import base64
+import uuid
 
-# Сериализатор для услуги
+class Base64ImageField(serializers.ImageField):
+    def to_internal_value(self, data):
+        if isinstance(data, str) and data.startswith('data:image'):
+            format, imgstr = data.split(';base64,')
+            ext = format.split('/')[-1]
+            
+            data = ContentFile(
+                base64.b64decode(imgstr),
+                name=f"{uuid.uuid4()}.{ext}"
+            )
+        return super().to_internal_value(data)
+
+    def to_representation(self, value):
+        if not value:
+            return None
+            
+        try:
+            with value.open() as f:
+                return f"data:image/{value.name.split('.')[-1]};base64,{base64.b64encode(f.read()).decode()}"
+        except:
+            return None
+
 class ServiceSerializer(serializers.ModelSerializer):
+    image = Base64ImageField(required=False)  # Используем кастомное поле
+
     class Meta:
         model = Service
         fields = ['id', 'name', 'description', 'price', 'image', 'status']
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
-        # Если метод запроса - PUT или PATCH, то сделаем поля необязательными
         if self.context['request'].method in ['PUT', 'PATCH']:
             for field in self.fields:
                 self.fields[field].required = False

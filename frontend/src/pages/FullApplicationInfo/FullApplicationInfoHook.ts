@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import { useParams } from 'react-router-dom';
-import { ApplicationsListHook } from '../Applications/ApplicationsListHook';
+import { statusTranslate } from "../../assets/utils/statusTranslate";
 import axiosClient from "./../../Clients"
 
 
 export function FullApplicationInfoHook() {
     const { id } = useParams();
-    const { applications, statusMapping, getRussianStatus } = ApplicationsListHook();
 
 
+    const { statusMapping, getStatus } = statusTranslate();
     const [creatorName, setCreatorName] = useState<string | null>(null); // Состояние для имени автора
     const [moderatorName, setModeratorName] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -27,22 +27,34 @@ export function FullApplicationInfoHook() {
     });
 
     useEffect(() => {
-        if (applications && id) {
-            const foundApp = applications.find((app: any) => String(app.id) === String(id));
-            if (foundApp) {
-              const englishStatus = Object.entries(statusMapping).find(
-                ([russian]) => russian === foundApp.status
-              )?.[1] || foundApp.status;
+      const fetchApp = async () => {
+        try {
+          // setLoading(true);
+          const response = await axiosClient.get(`/api/applications/${id}/`);
+          
+          // Используем функцию getStatus для преобразования статуса
+          const englishStatus = getStatus(response.data.status);
 
-                setApplication(foundApp);
-                setEditedApplication({
-                  status: englishStatus,
-                  form_date: foundApp.form_date,
-                  completion_date: foundApp.completion_date,
-                });
-            }
+          setApplication(response.data);
+          setEditedApplication({
+            ...response.data,
+            status: englishStatus, // Устанавливаем статус в английской версии
+          });
+          
+          // setError(null);
+        } catch (e) {
+          // setError(isAxiosError(e) ? e.message : 'Ошибка запроса');
+        } finally {
+          // setLoading(false);
         }
-    }, [applications, id]);
+      };
+
+      if (id) {
+        fetchApp(); // Загружаем данные только если есть id
+      }
+    }, [id]);
+
+
 
     useEffect(() => {
       const fetchApplicationServices = async () => {
@@ -140,36 +152,49 @@ export function FullApplicationInfoHook() {
       if (isLoading) return;
 
       const fetchData = async () => {
-        try {
-          if (application && application.creator) {
-            setIsLoading(true);
-            try {
-              const response = await axiosClient.get(`/api/users/${application.creator}`);
+        if (!application) return; // Если application отсутствует, прерываем выполнение функции.
+
+        setIsLoading(true); // Включаем состояние загрузки один раз для обоих запросов.
+
+        const fetchUser = async (userId: string, type: 'creator' | 'moderator') => {
+          try {
+            const response = await axiosClient.get(`/api/users/${userId}`);
+            if (type === 'creator') {
               setCreatorName(response.data.username);
-            } catch (error) {
-              console.error("Ошибка при получении имени автора:", error);
-              setCreatorName("Не удалось загрузить имя");
-            } finally {
-              setIsLoading(false);
+            } else if (type === 'moderator') {
+              setModeratorName(response.data.username);
             }
+          } catch (error) {
+            console.error(`Ошибка при получении имени ${type}:`, error);
+            if (type === 'creator') {
+              setCreatorName("Не удалось загрузить имя");
+            } else if (type === 'moderator') {
+              setModeratorName("Не удалось загрузить имя");
+            }
+          }
+        };
+
+        try {
+          // Создаём массив промисов для параллельных запросов
+          const promises = [];
+          
+          if (application.creator) {
+            promises.push(fetchUser(application.creator, 'creator'));
           }
 
-          if (application && application.moderator) {
-            setIsLoading(true);
-            try {
-              const response = await axiosClient.get(`/api/users/${application.moderator}`);
-              setModeratorName(response.data.username);
-            } catch (error) {
-              console.error("Ошибка при получении имени модератора:", error);
-              setModeratorName("Не удалось загрузить имя");
-            } finally {
-              setIsLoading(false);
-            }
+          if (application.moderator) {
+            promises.push(fetchUser(application.moderator, 'moderator'));
           }
+
+          // Ожидаем выполнения всех запросов
+          await Promise.all(promises);
         } catch (err) {
           console.error("Ошибка при получении токена или данных:", err);
+        } finally {
+          setIsLoading(false); // Останавливаем загрузку, когда все запросы завершены
         }
       };
+
 
       fetchData();
     }, [application]);
@@ -184,7 +209,7 @@ export function FullApplicationInfoHook() {
       applicationServices,
       application,
       statusMapping,
-      getRussianStatus,
+      getStatus,
       handleSave,
       setIsEditing,
       handleInputChange

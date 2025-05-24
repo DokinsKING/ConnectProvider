@@ -8,7 +8,7 @@ import { store, persistor } from './redux/store.ts' // <-- Теперь эксп
 
 document.body.style.backgroundColor = "#b18d5e";
 
-document.documentElement.style.minWidth = "1180px";
+document.documentElement.style.minWidth = "1350px";
 
 
 createRoot(document.getElementById('root')!).render(

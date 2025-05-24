@@ -6,7 +6,7 @@ import styles from './FullApplicationInfo.module.css';
 export function FullApplicationInfo() {
   const location = useLocation();
 
-  const { creatorName, moderatorName, isAdmin, isEditing, editedApplication, application, applicationServices, statusMapping, getRussianStatus, handleInputChange, handleSave, setIsEditing} = FullApplicationInfoHook();
+  const { creatorName, moderatorName, isAdmin, isEditing, editedApplication, application, applicationServices, statusMapping, handleInputChange, getStatus, handleSave, setIsEditing} = FullApplicationInfoHook();
 
   if (!application) {
     return;
@@ -35,15 +35,15 @@ export function FullApplicationInfo() {
             onChange={handleInputChange}
             className={`${styles.status} ${styles[editedApplication.status] || ''} ${styles.statuseditInput}`}
           >
-            {Object.entries(statusMapping).map(([russianStatus, englishStatus]) => (
-              <option key={englishStatus} value={englishStatus}>
+            {Object.keys(statusMapping).map((russianStatus) => (
+              <option key={russianStatus} value={statusMapping[russianStatus]}>
                 {russianStatus}
               </option>
             ))}
           </select>
         ) : (
           <span className={`${styles.status} ${styles[application.status] || ''}`}>
-            {getRussianStatus(application.status) || 'без статуса'}
+            {getStatus(application.status) || 'без статуса'}
           </span>
         )}
         <p>Создана: {formatDate(application.created_at)}</p>
