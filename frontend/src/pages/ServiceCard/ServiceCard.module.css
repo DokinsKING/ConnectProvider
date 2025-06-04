@@ -29,6 +29,13 @@
     word-wrap: break-word;
 }
 
+.price {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #000000; /* Темно-синий цвет */
+  margin-left: 225px;
+}
+
 .image {
     position: absolute;
     height: 100%;

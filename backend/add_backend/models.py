@@ -4,7 +4,7 @@ from django_minio_backend import MinioBackend
 
 # Статусы заявки
 class ApplicationStatus(models.TextChoices):
-    DRAFT = 'draft', 'Черновик'
+    DRAFT = 'draft', 'На рассмотрении'
     DELETED = 'deleted', 'Удалён'
     FORMATTED = 'formatted', 'Сформирован'
     COMPLETED = 'completed', 'Завершён'

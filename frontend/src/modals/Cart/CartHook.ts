@@ -12,6 +12,12 @@ export function CartHook(cartItems: any[], setCartItems: any) {
     }, [setCartItems]);
 
     // Удаление товара из корзины
+        const removeAllCart = () => {
+            setCartItems([]);
+            localStorage.removeItem('cart');
+        };
+
+    // Удаление товара из корзины
     const removeFromCart = (index: number) => {
         const updatedCart = cartItems.filter((_, i) => i !== index);
         setCartItems(updatedCart);
@@ -80,6 +86,7 @@ export function CartHook(cartItems: any[], setCartItems: any) {
 
     return {
         removeFromCart,
-        confirmApplication
+        confirmApplication,
+        removeAllCart
     };
 }

@@ -48,6 +48,7 @@ export function ServiceList() {
                         name={service.name}
                         description={service.description}
                         image={service.image}
+                        price={service.price}
                         addToCart={addToCart} // Передаем функцию добавления в корзину
                     />
                 ))

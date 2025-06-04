@@ -95,6 +95,29 @@
     overflow-wrap: break-word;
 }
 
+.price {
+  font-size: 25px;
+  margin-left: 245px;
+  max-width: 455px;
+  margin-top: -2%;
+}
+
+.deleteAllButton
+{
+    padding: 5px 15px;
+    background-color: #e77a7a; /* Зеленая кнопка */
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    width: 150;
+    transition: background-color 0.3s ease;
+    margin-top: -40px;
+    margin-left: 600px;
+    position: absolute;
+}
+
 .removeButton {
     padding: 8px 12px;
     background-color: #ff4d4d; /* Красная кнопка */

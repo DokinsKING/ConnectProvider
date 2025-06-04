@@ -30,11 +30,11 @@ export function ServiceListHook() {
     };
 
     // Функция для добавления товара в корзину
-    const addToCart = (id: number, name: string, description: string, image: string) => {
+    const addToCart = (id: number, name: string, description: string, image: string, price: number) => {
         const isItemInCart = cartItems.some(item => item.id === id);
 
         if (!isItemInCart) {
-            const newItem = { id, name, description, image };
+            const newItem = { id, name, description, image, price };
             setCartItems((prevItems) => {
                 const updatedItems = [...prevItems, newItem];
                 localStorage.setItem('cart', JSON.stringify(updatedItems));

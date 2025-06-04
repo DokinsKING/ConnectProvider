@@ -21,7 +21,6 @@ const refreshAccessToken = async () => {
       throw new Error('Refresh token not found');
     }
 
-    console.log(refreshToken)
     const response = await axios.post('/api/token/refresh/', {
       refresh: refreshToken,
     });
@@ -29,7 +28,14 @@ const refreshAccessToken = async () => {
     localStorage.setItem('access_token', newAccessToken);
 
     return newAccessToken;
-  } catch (error) {
+  } catch (error: any) {
+    // Если ошибка 401 (неавторизованный), удаляем токены из localStorage
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+    }
+
+    
     console.error('Failed to refresh access token:', error);
     throw error;
   }
@@ -52,9 +58,6 @@ axiosClient.interceptors.request.use(
         isRefreshing = true;
         token = await refreshAccessToken();  // Обновляем токен
         isRefreshing = false;  // Сбрасываем флаг после обновления
-      } else {
-        // Если токен уже обновляется, просто ждем, пока он будет обновлен
-        token = await refreshAccessToken();
       }
     }
 

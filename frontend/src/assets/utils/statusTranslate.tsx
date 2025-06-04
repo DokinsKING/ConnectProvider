@@ -1,6 +1,6 @@
 export function statusTranslate() {
   const statusMapping: { [key: string]: string } = {
-    "Черновик": "draft",
+    "На рассмотрении": "draft",
     "Удалён": "deleted",
     "Сформирован": "formatted",
     "Завершён": "completed",

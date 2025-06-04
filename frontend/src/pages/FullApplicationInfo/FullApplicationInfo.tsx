@@ -1,11 +1,9 @@
-import { useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { FullApplicationInfoHook } from './FullApplicationInfoHook';
 import styles from './FullApplicationInfo.module.css';
 
 export function FullApplicationInfo() {
-  const location = useLocation();
-
   const { creatorName, moderatorName, isAdmin, isEditing, editedApplication, application, applicationServices, statusMapping, handleInputChange, getStatus, handleSave, setIsEditing} = FullApplicationInfoHook();
 
   if (!application) {
@@ -23,7 +21,12 @@ export function FullApplicationInfo() {
 
   return (
     <div className={styles.container}>
-      <p className={styles.pathway}>{location.pathname}</p>
+      <p className={styles.pathway}>
+          /
+          <Link to="/applications" className={styles.linkOnly}>applications</Link>
+          / 
+          <span className={styles.linkOnly}>Заявка #{application.id}</span>
+      </p>
       
       <h2 className={styles.title}>Заявка #{application.id}</h2>
       
