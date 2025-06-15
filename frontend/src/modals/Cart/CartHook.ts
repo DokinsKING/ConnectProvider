@@ -1,8 +1,11 @@
 import { useEffect } from 'react';
 import { isAxiosError } from 'axios'; // Импортируем axios и тип AxiosError
 import axiosClient from "./../../Clients"
+import { useNavigate } from 'react-router-dom';
 
 export function CartHook(cartItems: any[], setCartItems: any) {
+
+    const navigate = useNavigate();
     // Загрузка корзины из localStorage
     useEffect(() => {
         const savedCart = localStorage.getItem('cart');
@@ -79,6 +82,7 @@ export function CartHook(cartItems: any[], setCartItems: any) {
                 console.error('Ошибка сервера:', error.response?.data);
             } else {
                 console.error('Ошибка:', error);
+                navigate("/login")
             }
             return null;
         }

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import Mock from "./mock.png";
 import axiosClient from "./../../Clients"
 
 export function ServiceListHook() {
@@ -8,13 +9,44 @@ export function ServiceListHook() {
     const [isCartVisible, setIsCartVisible] = useState(false);
     const [isCartLoaded, setIsCartLoaded] = useState(false);
 
+        // Добавляем мок-данные
+    const mockServices = [
+        {
+            id: 1,
+            name: "Что-то не так",
+            description: "Нет доступа к серверу(",
+            image: Mock,
+            price: 0
+        }
+    ];
+
+    const processServiceImages = (services: any[]) => {
+        return services.map(service => ({
+            ...service,
+            // Подставляем мок-изображение если:
+            // - изображение отсутствует
+            // - это строка нулевой длины
+            // - это значение null/undefined
+            image: service.image || Mock
+        }));
+    };
+
     // Функция для загрузки данных о сервисах
     const fetchServices = useCallback(async () => {
         try {
             const response = await axiosClient.get(`/api/services?name=${searchQuery}`);
-            setServices(response.data);
+            
+            // Обрабатываем изображения перед установкой состояния
+            const processedServices = processServiceImages(response.data);
+            
+            // Используем моки если сервер вернул пустой ответ
+            setServices(processedServices.length > 0 
+                ? processedServices 
+                : processServiceImages(mockServices));
         } catch (error) {
-            console.error("Ошибка при получении данных:", error);
+            console.error("Ошибка при получении данных. Используем мок-данные.", error);
+            // При ошибке загрузки используем обработанные мок-данные
+            setServices(processServiceImages(mockServices));
         }
     }, [searchQuery]);
 

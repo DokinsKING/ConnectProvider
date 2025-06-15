@@ -62,12 +62,12 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware', 
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware', 
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -144,6 +144,7 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'API OF IS-COM',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': True,  # Показывать ли схему на сервере
+    'SCHEMA_PATH_PREFIX': '/api',
 }
 
 # JWT Settings

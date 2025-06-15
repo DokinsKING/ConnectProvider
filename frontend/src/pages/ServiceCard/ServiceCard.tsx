@@ -12,7 +12,7 @@ export function ServiceCard({ id, name, description, image, price, addToCart} : 
             <h2 className={styles.price}>{price} ₽/мес</h2>
             <div className={styles.buttons}>
                 <button onClick={()=>navigate(`${id}`)}>Подробнее</button>
-                <button onClick={() => addToCart(id, name, description, image, price)}>Добавить в заявки</button>
+                <button onClick={() => addToCart(id, name, description, image, price)}>Добавить в корзину</button>
             </div>
         </div>
     );

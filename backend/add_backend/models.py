@@ -18,10 +18,10 @@ class ServiceStatus(models.TextChoices):
 # Модель услуги
 class Service(models.Model):
     name = models.CharField(max_length=255)
-    description = models.TextField()
+    description = models.TextField(blank=True, null=True)
     price = models.IntegerField()
     image = models.FileField(verbose_name="Object Upload",
-                            storage=MinioBackend(bucket_name='images'))
+                            storage=MinioBackend(bucket_name='images'), blank=True, null=True)
     status = models.CharField(max_length=10, choices=ServiceStatus.choices, default=ServiceStatus.ACTIVE)
     def soft_delete(self):
         self.status = ServiceStatus.DELETED
