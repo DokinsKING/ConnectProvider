@@ -1,9 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django_minio_backend import MinioBackend
 
 # Статусы заявки
 class ApplicationStatus(models.TextChoices):
-    DRAFT = 'draft', 'Черновик'
+    DRAFT = 'draft', 'На рассмотрении'
     DELETED = 'deleted', 'Удалён'
     FORMATTED = 'formatted', 'Сформирован'
     COMPLETED = 'completed', 'Завершён'
@@ -17,7 +18,7 @@ class ServiceStatus(models.TextChoices):
 # Модель услуги
 class Service(models.Model):
     name = models.CharField(max_length=255)
-    description = models.TextField()
+    description = models.TextField(blank=True, null=True)
     price = models.IntegerField()
     image = models.URLField(max_length=500)
     status = models.CharField(max_length=10, choices=ServiceStatus.choices, default=ServiceStatus.ACTIVE)
